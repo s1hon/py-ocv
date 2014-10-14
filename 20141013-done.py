@@ -10,23 +10,23 @@ for x in range(height):
 	for y in range(width):
 		if gimg[x][y]<=25 :
 			gimg[x][y]=13
-		if gimg[x][y]<=50 and gimg[x][y] >=26:
+		elif gimg[x][y]<=50 :
 			gimg[x][y]=39
-		if gimg[x][y]<=76 and gimg[x][y] >=51 :
+		elif gimg[x][y]<=76 :
 			gimg[x][y]=64
-		if gimg[x][y]<=101 and gimg[x][y] >=77 :
+		elif gimg[x][y]<=101 :
 			gimg[x][y]=90
-		if gimg[x][y]<=127 and gimg[x][y] >=102 :
+		elif gimg[x][y]<=127 :
 			gimg[x][y]=115
-		if gimg[x][y]<=152 and gimg[x][y] >=128 :
+		elif gimg[x][y]<=152 :
 			gimg[x][y]=141
-		if gimg[x][y]<=178 and gimg[x][y] >=153 :
+		elif gimg[x][y]<=178 :
 			gimg[x][y]=166
-		if gimg[x][y]<=203 and gimg[x][y] >=179 :
+		elif gimg[x][y]<=203 :
 			gimg[x][y]=192
-		if gimg[x][y]<=229 and gimg[x][y] >=204 :
+		elif gimg[x][y]<=229 :
 			gimg[x][y]=217
-		if gimg[x][y]<=255 and gimg[x][y] >=230 :
+		elif gimg[x][y]<=255 :
 			gimg[x][y]=243
 		print "%s.%s=%s\t%s" %(x,y,img[x][y],gimg[x][y])
 		img[x][y]=gimg[x][y]
