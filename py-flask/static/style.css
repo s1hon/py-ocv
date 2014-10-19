@@ -1,0 +1,38 @@
+body            { font-family: sans-serif; background: #eee; }
+a, h1, h2       { color: #377ba8; }
+h1, h2          { font-family: 'Georgia', serif; margin: 0; }
+h1              { border-bottom: 2px solid #eee; }
+h2              { font-size: 1.2em; }
+
+.page           { margin: 2em auto; width: 80%; border: 5px solid #ccc;
+                  padding: 0.8em; background: white; }
+
+.statusbar      { margin: 2em auto; width: 80%;}
+.entries        { list-style: none; margin: 0; padding: 0; }
+.entries li     { margin: 0.8em 1.2em; }
+.entries li h2  { margin-left: -1em; }
+.add-entry      { font-size: 0.9em; border-bottom: 1px solid #ccc; }
+.add-entry dl   { font-weight: bold; }
+.metanav        { text-align: right; font-size: 0.8em; padding: 0.3em;
+                  margin-bottom: 1em; background: #fafafa; }
+.flash          { text-align: center; }
+.error          { background: #f0d6d6; padding: 0.5em; }
+.status-r-margin{ margin: 15px; }
+.flash-bg       { font-size: 35px;}
+
+
+.statusbar      {
+    display: none;
+    margin: 0px auto;
+    position: fixed;
+    z-index: 999999;
+    top: 45px;
+    left: 25%;
+    width: 50%;
+    border:1px solid #B5B5B5;
+}
+
+.pid-id-text-bg{
+    top :5px;
+    font-size: 16px;
+}

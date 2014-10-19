@@ -1,0 +1,88 @@
+{% extends "layout.html" %}
+{% block input %}
+
+{% if error %}
+<div class="alert alert-danger"><strong>Error:</strong>{{ error }}</div>
+{% endif %}
+
+<!-- DEMO -->
+{% if session.logged_in %}
+  <a href="{{ url_for('set_demo') }}" type="button" class="btn btn-default btn-block">DEMO</a>
+{% endif %}
+<!-- DEMO -->
+
+
+<br>
+<table class="table table-bordered text-center">
+  <tr>
+    <td class="col-md-2">建立時間</td>
+    <td class="col-md-1">件號</td>
+    <td class="col-md-1">學號</td>
+
+    {% if session.logged_in %}
+    <td class="col-md-1">姓名</td>
+    <td class="col-md-1">手機</td>
+    {% endif %}
+
+    <td class="col-md-1">狀態</td>
+
+    {% if session.logged_in %}
+    <td class="col-md-3">編輯</td>
+    {% endif %}
+
+  </tr>
+
+{% for entry in entries %}
+    <tr>
+      <td Style="vertical-align:middle; height: auto;">{{ entry.create_time }}</td>
+      <td Style="vertical-align:middle; height: auto;">{{ entry.print_id }}</td>
+      <td Style="vertical-align:middle; height: auto;">{{ entry.stu_id }}</td>
+
+      {% if session.logged_in %}
+
+      <td Style="vertical-align:middle; height: auto;">{{ entry.name }}</td>
+      <td Style="vertical-align:middle; height: auto;">{{ entry.phone }}</td>
+      {% endif %}
+
+      <td Style="vertical-align:middle; height: auto;">
+        <span class="label
+        {% if entry.status==0 %}
+           label-default ">排隊中</span>
+        {% elif entry.status==2 %}
+           label-danger">列印中</span>
+        {% elif entry.status==1 %}
+           label-success">待領取</span>
+        {% endif %}
+      </td>
+
+      {% if session.logged_in %}
+      <td>
+          <form action="{{ url_for('manage_entry') }}" method=post>
+            <input type="hidden" name="print_id" value="{{ entry.print_id }}">
+            <input type="submit" class="btn btn-default" name="submit" value="修改">
+            <input type="submit" class="btn btn-default" name="submit" value="刪除">
+            {% if entry.status == 0 %}
+            <input type="submit" class="btn btn-default" name="submit" value="列印">
+            {% elif entry.status == 2 %}
+            <input type="submit" class="btn btn-danger" name="submit" value="停止">
+            {% elif entry.status == 1 %}
+            <input type="submit" class="btn btn-success" name="submit" value="領取">
+            {% endif %}
+
+          </form>
+      </td>
+      {% endif %}
+    </tr>
+{% else %}
+<tr>
+  <td colspan='7'><em>尚未有任何列印佇列。</em></td>
+</tr>
+{% endfor %}
+
+</table>
+
+
+
+
+
+{% endblock %}

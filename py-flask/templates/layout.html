@@ -1,0 +1,57 @@
+<!doctype html>
+<head>
+  <title>{{ title }} | CatchU</title>
+  <link href="{{ url_for('static', filename='css/bootstrap.css') }}" rel="stylesheet" media="screen">
+  <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+  <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+</head>
+
+<body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div id="statusbar" class="statusbar flash alert alert-info {{ category }}">{{ message }}</div>
+          <script>
+            $(document).ready(function(){
+              $("#statusbar").fadeIn(500).delay(5000).fadeOut(1500);
+              // $("#statusbar").delay(3000).fadeOut(1500);
+            });
+        </script>
+
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+  <nav class="navbar navbar-default navbar-static-top navbar-inverse" role="navigation">
+    <div class="container">
+      <span>
+      <ul class="nav navbar-nav">
+          <li><a href="{{ url_for('show_index') }}">首頁</a></li>
+          <li><a href="{{ url_for('add_entry') }}">新增列印</a></li>
+          <li><a href="{{ url_for('search_entry') }}">修改列印</a></li>
+          <li><a href="{{ url_for('show_entries') }}">列印進度</a></li>
+          <li>
+            {% if not session.logged_in %}
+              <a href="{{ url_for('login') }}">登入</a>
+            {% else %}
+              <a href="{{ url_for('logout') }}">登出</a>
+            {% endif %}
+          </li>
+      </ul>
+      </span>
+      {% if printnow!=None %}
+      <span class="label label-danger status-r-margin pull-right">  件號 {{ printnow }} 正在列印中</span>
+      {% else %}
+      <span class="label label-success status-r-margin pull-right">機器待命中</span>
+      {% endif %}
+    </div>
+  </nav>
+
+  <div class="row page">
+    <h1>{{ title }}</h1>
+    <div class=metanav>
+    </div>
+    {% block input %}{% endblock %}
+  </div>
+</body>
