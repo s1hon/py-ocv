@@ -235,5 +235,5 @@ if __name__ == '__main__':
     # os.system('open http://127.0.0.1:5000/')
     ###### for demo ######
 
-    app.run()
+    app.run(host='0.0.0.0',port=80)
 
