@@ -53,9 +53,9 @@ def teardown_request(exception):
 @app.route('/')
 def show_index():
     title="歡迎來到 CatchU"
-    app.logger.info('User at index')
-    app.logger.warn('yyyy')
-    app.logger.error('zzzz')
+    # app.logger.info('User at index')
+    # app.logger.warn('yyyy')
+    # app.logger.error('zzzz')
     return render_template('index.html',title=title,printnow=get_print_now_id())
 
 
@@ -88,10 +88,9 @@ def add_entry():
 
             g.db.execute('insert into prints (print_id, stu_id, name, phone, status) values (?,?,?,?,?)',
                          [totalmax + request.form['stu_id'][-3:], request.form['stu_id'], request.form['name'],request.form['phone'],0])
-
             g.db.commit()
-            # btn-lg
             flash('請記下您的列印件號： '+totalmax + request.form['stu_id'][-3:],'alert-success btn-lg flash-bg')
+            app.logger.info('[Print] Add Printing <PID:'+totalmax + request.form['stu_id'][-3:]+'>')
             return redirect(url_for('show_entries'))
         else:
             error='您輸入的資料有誤。'
@@ -161,6 +160,8 @@ def manage_entry():
             g.db.execute('delete from prints where print_id="'+search_pid[0]+'"')
             g.db.commit()
             flash('刪除成功。','alert-danger')
+
+            app.logger.error('[Print] Del Printing <PID:'+search_pid[0]+'>')
             return redirect(url_for('show_entries'))
         elif request.form['submit'] == "列印":
             print_now_pid=g.db.execute('select print_id from prints where status="2"')
@@ -169,6 +170,7 @@ def manage_entry():
             if not print_now_pid:
                 g.db.execute('update prints set status="2" where print_id="'+search_pid[0]+'"')
                 g.db.commit()
+                app.logger.warn('[Print] Start Printing <PID:'+search_pid[0]+'>')
                 return redirect(url_for('show_entries'))
             else:
                 flash('尚有列印工作進行中。','alert-danger')
@@ -176,10 +178,12 @@ def manage_entry():
         elif request.form['submit'] == "停止":
             g.db.execute('update prints set status="0" where print_id="'+search_pid[0]+'"')
             g.db.commit()
+            app.logger.error('[Print] Stop Printing <PID:'+search_pid[0]+'>')
             return redirect(url_for('show_entries'))
         elif request.form['submit'] == "領取":
             g.db.execute('update prints set status="3" where print_id="'+search_pid[0]+'"')
             g.db.commit()
+            app.logger.info('[Print] Receive Printing <PID:'+search_pid[0]+'>')
             return redirect(url_for('show_entries'))
         else:
             abort(401)
@@ -190,10 +194,9 @@ def manage_entry():
 def login():
     error = None
     if request.method == 'POST':
-        if request.form['username'] != app.config['USERNAME']:
+        if request.form['username'] != app.config['USERNAME'] or request.form['password'] != app.config['PASSWORD']:
             error = '您輸入的資料有誤。'
-        elif request.form['password'] != app.config['PASSWORD']:
-            error = '您輸入的資料有誤。'
+            app.logger.error('[Login] Permission denied ('+request.remote_addr+')')
         else:
             session['logged_in'] = True
             flash('您已經成功登入。')
@@ -239,13 +242,16 @@ if __name__ == '__main__':
     # os.system('open http://127.0.0.1:5000/')
     ###### for demo ######
 
-
     ###### for LOG ######
     handler = RotatingFileHandler('foo.log', maxBytes=10000, backupCount=1)
-    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+    formatter = logging.Formatter("%(asctime)s - %(message)s")
     handler.setLevel(logging.INFO)
     handler.setFormatter(formatter)
     app.logger.addHandler(handler)
+    app.logger.info('┌────────────────────────┐')
+    app.logger.info('|  Start CatchU server   |')
+    app.logger.info('| Design by : Sean Chen  |')
+    app.logger.info('└────────────────────────┘')
     ###### for LOG ######
 
 #   app.run(host='0.0.0.0',port=80)
