@@ -5,10 +5,11 @@ if sys.getdefaultencoding() != 'utf-8':
     sys.setdefaultencoding('utf-8')
 
 # all the imports
-import sqlite3 , string , os
+import sqlite3 , string , os , logging , Colorer
 from flask import Flask, request, session, g, redirect, url_for, \
      abort, render_template, flash
 from contextlib import closing
+from logging.handlers import RotatingFileHandler
 
 
 # configuration
@@ -52,6 +53,9 @@ def teardown_request(exception):
 @app.route('/')
 def show_index():
     title="歡迎來到 CatchU"
+    app.logger.info('User at index')
+    app.logger.warn('yyyy')
+    app.logger.error('zzzz')
     return render_template('index.html',title=title,printnow=get_print_now_id())
 
 
@@ -235,5 +239,15 @@ if __name__ == '__main__':
     # os.system('open http://127.0.0.1:5000/')
     ###### for demo ######
 
-    app.run(host='0.0.0.0',port=80)
+
+    ###### for LOG ######
+    handler = RotatingFileHandler('foo.log', maxBytes=10000, backupCount=1)
+    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+    handler.setLevel(logging.INFO)
+    handler.setFormatter(formatter)
+    app.logger.addHandler(handler)
+    ###### for LOG ######
+
+#   app.run(host='0.0.0.0',port=80)
+    app.run()
 
