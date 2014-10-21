@@ -56,6 +56,7 @@ def show_index():
     # app.logger.info('User at index')
     # app.logger.warn('yyyy')
     # app.logger.error('zzzz')
+    app.logger.info('[Hello] Welcome user '+request.remote_addr)
     return render_template('index.html',title=title,printnow=get_print_now_id())
 
 
@@ -161,7 +162,7 @@ def manage_entry():
             g.db.commit()
             flash('刪除成功。','alert-danger')
 
-            app.logger.error('[Print] Del Printing <PID:'+search_pid[0]+'>')
+            app.logger.error('[Print] Delete Printing <PID:'+search_pid[0]+'>')
             return redirect(url_for('show_entries'))
         elif request.form['submit'] == "列印":
             print_now_pid=g.db.execute('select print_id from prints where status="2"')
@@ -248,10 +249,6 @@ if __name__ == '__main__':
     handler.setLevel(logging.INFO)
     handler.setFormatter(formatter)
     app.logger.addHandler(handler)
-    app.logger.info('┌────────────────────────┐')
-    app.logger.info('|  Start CatchU server   |')
-    app.logger.info('| Design by : Sean Chen  |')
-    app.logger.info('└────────────────────────┘')
     ###### for LOG ######
 
 #   app.run(host='0.0.0.0',port=80)
