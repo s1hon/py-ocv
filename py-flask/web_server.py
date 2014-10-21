@@ -56,7 +56,7 @@ def show_index():
     # app.logger.info('User at index')
     # app.logger.warn('yyyy')
     # app.logger.error('zzzz')
-    app.logger.info('[Hello] Welcome user '+request.remote_addr)
+    app.logger.warn('[Hello] Welcome user '+request.remote_addr)
     return render_template('index.html',title=title,printnow=get_print_now_id())
 
 
