@@ -91,7 +91,7 @@ def add_entry():
                          [totalmax + request.form['stu_id'][-3:], request.form['stu_id'], request.form['name'],request.form['phone'],0])
             g.db.commit()
             flash('請記下您的列印件號： '+totalmax + request.form['stu_id'][-3:],'alert-success btn-lg flash-bg')
-            app.logger.warn('[Print] Add Printing <PID:'+totalmax + request.form['stu_id'][-3:]+'>')
+            app.logger.info('[Print] Add Printing <PID:'+totalmax + request.form['stu_id'][-3:]+'>')
             return redirect(url_for('show_entries'))
         else:
             error='您輸入的資料有誤。'
