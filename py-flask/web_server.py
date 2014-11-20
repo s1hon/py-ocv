@@ -10,6 +10,7 @@ from flask import Flask, request, session, g, redirect, url_for, \
      abort, render_template, flash
 from contextlib import closing
 from logging.handlers import RotatingFileHandler
+from werkzeug.contrib.fixers import ProxyFix
 
 
 # configuration
@@ -235,6 +236,9 @@ def set_demo():
     g.db.commit()
     return redirect(url_for('show_entries'))
 ######### for demo #########
+
+
+app.wsgi_app = ProxyFix(app.wsgi_app)
 
 if __name__ == '__main__':
 
