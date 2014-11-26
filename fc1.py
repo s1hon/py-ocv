@@ -1,5 +1,6 @@
 import os
-
+import cv2
+import numpy as np,sys
 print_id= None
 
 def writeA(x1,y1):
@@ -23,3 +24,23 @@ def make(pt):
 	f = open(print_id,'w')
 	f.close()
 
+
+def show(pn):
+	global pic_id
+	pic_id = str(pn)+'.jpg'
+	gimg = cv2.imread(pic_id)
+	cv2.imshow('image',gimg)
+	height, width, depth = gimg.shape
+
+	for x in range(height):
+        	for y in range(width):
+			os.system("echo x" + "  >> " + pic_file)
+
+	cv2.waitKey(0)
+
+def showfile(sf):
+	global pic_file
+	pic_file = str(sf)+'.nc'
+	f = open(pic_file,'w')
+	f.close()
+		

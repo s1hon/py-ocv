@@ -34,4 +34,5 @@ for x in range(height):
 #cv2.imshow('image-after',img)
 cv2.imshow('image-gray',gimg)
 
+cv2.imwrite('./test.jpg',gimg)
 cv2.waitKey(0)
