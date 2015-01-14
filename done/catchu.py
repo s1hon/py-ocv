@@ -30,8 +30,8 @@ def direction2():
 	os.system("echo G17" + ">>" + fileid)
 	os.system("echo M3 S1000" + ">>" + fileid)
 	os.system("echo G0 X0 Y0" + ">>" + fileid)
-	for y in range(width):
-		for x in range(0,height,2):
+	for y in range(0,width,2):
+		for x in range(height):
 			if gimg[x][y]<=191:
 				if gimg[x-1][y]<=191:
 					os.system("echo G1 X" + str(x/10) + " Y" + str(y/10) + ">>" + fileid)
