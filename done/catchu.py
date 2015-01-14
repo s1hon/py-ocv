@@ -12,6 +12,7 @@ def makefile(filename):
 
 #direction top to bottom
 def direction1():
+	cy=0
 	os.system("echo G17" + ">>" + fileid)
 	os.system("echo M3 S1000" + ">>" + fileid)
 	os.system("echo G0 X0 Y0" + ">>" + fileid)
@@ -22,8 +23,10 @@ def direction1():
 					os.system("echo G1 X" + str(x/10) + " Y" + str(y/10) + ">>" + fileid)
 				else:
 					os.system("echo G0 X" + str(x/10) + " Y" + str((y+1)/10) +">>" + fileid)
+		os.system("echo G0 X" + str(x/10) + " Y" + str(cy) + ">>" + fileid)
 		print "direction1 -> %0.1f %%" %((x*100.0)/height)
 def direction2():
+	cx=0
 	os.system("echo G17" + ">>" + fileid)
 	os.system("echo M3 S1000" + ">>" + fileid)
 	os.system("echo G0 X0 Y0" + ">>" + fileid)
@@ -34,6 +37,7 @@ def direction2():
 					os.system("echo G1 X" + str(x/10) + " Y" + str(y/10) + ">>" + fileid)
 				else:
 					os.system("echo G0 X" + str((x+1)/10) + " Y" + str(y/10) +">>" + fileid)
+		os.system("echo G0 X" + str(cx) + " Y" + str(y/10) + ">>" + fileid)
 		print "direction2 -> %0.1f %%" %((y*100.0)/width)
 #pic to gray
 gimg = cv2.imread('picture.jpg',cv2.IMREAD_GRAYSCALE)
