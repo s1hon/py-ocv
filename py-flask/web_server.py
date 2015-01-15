@@ -279,6 +279,6 @@ if __name__ == '__main__':
     app.logger.addHandler(handler)
     ###### for LOG ######
 
-#   app.run(host='0.0.0.0',port=80)
+    # app.run(host='0.0.0.0',port=80,threaded=True)
     app.run(threaded=True)
 
