@@ -12,6 +12,9 @@ from contextlib import closing
 from logging.handlers import RotatingFileHandler
 from werkzeug.contrib.fixers import ProxyFix
 
+# for creating gcode
+from multiprocessing import Process
+import time
 
 # configuration
 DATABASE = './pt_tab.db'
@@ -36,9 +39,10 @@ def init_db():
         db.commit()
 
 def get_print_now_id():
-    pt = g.db.execute('select print_id from prints where status=2')
+    pt = g.db.execute('select print_id from prints where status=3')
     printnow=pt.fetchall()
     return printnow[0][0] if printnow else None
+
 
 @app.before_request
 def before_request():
@@ -66,13 +70,11 @@ def show_index():
 def show_entries():
     title="列印進度"
 
-
-
     if not session.get('logged_in'):
-        cur = g.db.execute('select create_time, print_id, stu_id, status from prints where status<>"3" order by status desc,create_time asc')
+        cur = g.db.execute('select create_time, print_id, stu_id, status from prints where status<>"4" order by status desc,create_time asc')
         entries = [dict(create_time=row[0],print_id=row[1],stu_id=row[2],status=row[3]) for row in cur.fetchall()]
     else:
-        cur = g.db.execute('select create_time, print_id, stu_id, name, phone, status from prints where status<>"3" order by status desc,create_time asc')
+        cur = g.db.execute('select create_time, print_id, stu_id, name, phone, status from prints where status<>"4" order by status desc,create_time asc')
         entries = [dict(create_time=row[0],print_id=row[1],stu_id=row[2],name=row[3],phone=row[4],status=row[5]) for row in cur.fetchall()]
     # return render_template('show_entries.html', entries=entries,printnow=printnow)
     return render_template('show_entries.html', entries=entries,printnow=get_print_now_id(),title=title)
@@ -91,14 +93,21 @@ def add_entry():
             g.db.execute('insert into prints (print_id, stu_id, name, phone, status) values (?,?,?,?,?)',
                          [totalmax + request.form['stu_id'][-3:], request.form['stu_id'], request.form['name'],request.form['phone'],0])
             g.db.commit()
+
+            # Information for html
             flash('請記下您的列印件號： '+totalmax + request.form['stu_id'][-3:],'alert-success btn-lg flash-bg')
             app.logger.info('[Print] Add Printing <PID:'+totalmax + request.form['stu_id'][-3:]+'>')
+
+            # Background creating gcode
+            print_id=totalmax + request.form['stu_id'][-3:]
+            gcode = Process(target=my_function, args=(print_id,))
+            gcode.start()
+
             return redirect(url_for('show_entries'))
         else:
             error='您輸入的資料有誤。'
     title="新增列印"
     return render_template('add.html',title=title,error=error,printnow=get_print_now_id())
-
 
 # 搜尋/修改單
 @app.route('/pid', methods=['GET', 'POST'])
@@ -166,11 +175,11 @@ def manage_entry():
             app.logger.error('[Print] Delete Printing <PID:'+search_pid[0]+'>')
             return redirect(url_for('show_entries'))
         elif request.form['submit'] == "列印":
-            print_now_pid=g.db.execute('select print_id from prints where status="2"')
+            print_now_pid=g.db.execute('select print_id from prints where status="3"')
             print_now_pid=print_now_pid.fetchone()
 
             if not print_now_pid:
-                g.db.execute('update prints set status="2" where print_id="'+search_pid[0]+'"')
+                g.db.execute('update prints set status="3" where print_id="'+search_pid[0]+'"')
                 g.db.commit()
                 app.logger.warn('[Print] Start Printing <PID:'+search_pid[0]+'>')
                 return redirect(url_for('show_entries'))
@@ -178,12 +187,12 @@ def manage_entry():
                 flash('尚有列印工作進行中。','alert-danger')
                 return redirect(url_for('show_entries'))
         elif request.form['submit'] == "停止":
-            g.db.execute('update prints set status="0" where print_id="'+search_pid[0]+'"')
+            g.db.execute('update prints set status="1" where print_id="'+search_pid[0]+'"')
             g.db.commit()
             app.logger.error('[Print] Stop Printing <PID:'+search_pid[0]+'>')
             return redirect(url_for('show_entries'))
         elif request.form['submit'] == "領取":
-            g.db.execute('update prints set status="3" where print_id="'+search_pid[0]+'"')
+            g.db.execute('update prints set status="4" where print_id="'+search_pid[0]+'"')
             g.db.commit()
             app.logger.info('[Print] Receive Printing <PID:'+search_pid[0]+'>')
             return redirect(url_for('show_entries'))
@@ -218,6 +227,21 @@ def logout():
     flash('您已經成功登出。')
     return redirect(url_for('show_index'))
 
+### Creating Gcode ###
+def my_function(print_id):
+    time.sleep(5)
+    print print_id
+
+    g.db = connect_db()
+
+    g.db.execute('update prints set status="1" where print_id="'+print_id+'"')
+    g.db.commit()
+    app.logger.info('[Gcode] Creating Done <PID:'+print_id+'>')
+
+    db = getattr(g, 'db', None)
+    if db is not None:
+        db.close()
+
 
 ###################################
 ## ████   █████  ██   ██   █████ ##
@@ -232,7 +256,7 @@ def logout():
 def set_demo():
     if not session.get('logged_in'):
         abort(401)
-    g.db.execute('update prints set status="1" where status="2"')
+    g.db.execute('update prints set status="2" where status="3"')
     g.db.commit()
     return redirect(url_for('show_entries'))
 ######### for demo #########
@@ -256,5 +280,5 @@ if __name__ == '__main__':
     ###### for LOG ######
 
 #   app.run(host='0.0.0.0',port=80)
-    app.run()
+    app.run(threaded=True)
 

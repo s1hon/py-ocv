@@ -46,12 +46,14 @@
 
       <td Style="vertical-align:middle; height: auto;">
         <span class="label
-        {% if entry.status==0 %}
+        {% if entry.status==1 %}
            label-default ">排隊中</span>
-        {% elif entry.status==2 %}
+        {% elif entry.status==3 %}
            label-danger">列印中</span>
-        {% elif entry.status==1 %}
+        {% elif entry.status==2 %}
            label-success">待領取</span>
+        {% elif entry.status==0 %}
+           label-default">Creating</span>
         {% endif %}
       </td>
 
@@ -61,11 +63,13 @@
             <input type="hidden" name="print_id" value="{{ entry.print_id }}">
             <input type="submit" class="btn btn-default" name="submit" value="修改">
             <input type="submit" class="btn btn-default" name="submit" value="刪除">
-            {% if entry.status == 0 %}
+            {% if entry.status == 1 %}
             <input type="submit" class="btn btn-default" name="submit" value="列印">
-            {% elif entry.status == 2 %}
+            {% elif entry.status == 0 %}
+            <input type="submit" class="btn btn-default" name="submit" value="Wait" disabled>
+            {% elif entry.status == 3 %}
             <input type="submit" class="btn btn-danger" name="submit" value="停止">
-            {% elif entry.status == 1 %}
+            {% elif entry.status == 2 %}
             <input type="submit" class="btn btn-success" name="submit" value="領取">
             {% endif %}
 
