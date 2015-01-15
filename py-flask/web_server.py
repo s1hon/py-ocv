@@ -261,7 +261,16 @@ def set_demo():
     return redirect(url_for('show_entries'))
 ######### for demo #########
 
+#======== for test ========#
+@app.route('/_stuff', methods= ['GET'])
+def stuff():
+    status=round(getstatus())
+    return jsonify(status=status)
 
+def getstatus():
+    os.system("cat num")
+
+#======== for test ========#
 app.wsgi_app = ProxyFix(app.wsgi_app)
 
 if __name__ == '__main__':
@@ -279,6 +288,6 @@ if __name__ == '__main__':
     app.logger.addHandler(handler)
     ###### for LOG ######
 
-    # app.run(host='0.0.0.0',port=80,threaded=True)
-    app.run(threaded=True)
+    app.run(host='0.0.0.0',port=80,threaded=True)
+    # app.run(threaded=True)
 

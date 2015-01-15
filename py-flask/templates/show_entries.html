@@ -1,6 +1,13 @@
 {% extends "layout.html" %}
 {% block input %}
 
+  <script>
+  var status_refresh_timer = setInterval(status_refresh_function, 5000);
+  function status_refresh_function(){
+    location.reload();
+  }
+  </script>
+
 {% if error %}
 <div class="alert alert-danger"><strong>Error:</strong>{{ error }}</div>
 {% endif %}
@@ -13,7 +20,7 @@
 
 
 <br>
-<table class="table table-bordered text-center">
+<table id="status" class="table table-bordered text-center">
   <tr>
     <td class="col-md-2">建立時間</td>
     <td class="col-md-1">件號</td>
