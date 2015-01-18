@@ -1,12 +1,12 @@
 {% extends "layout.html" %}
 {% block input %}
 
-  <script>
-  var status_refresh_timer = setInterval(status_refresh_function, 5000);
-  function status_refresh_function(){
-    location.reload();
-  }
-  </script>
+  // <script>
+  // var status_refresh_timer = setInterval(status_refresh_function, 5000);
+  // function status_refresh_function(){
+  //   location.reload();
+  // }
+  // </script>
 
 {% if error %}
 <div class="alert alert-danger"><strong>Error:</strong>{{ error }}</div>
