@@ -20,11 +20,13 @@ def direction1():
 	for x in range(0,height,2):
 		for y in range(width):
 			if gimg[x][y]<=223:
-				if gimg[x][y-1]<=223:
-					tmpy=y
-				else:
+				tmpy=y
+				if gimg[x][y-1]>223:
 					os.system("echo G0 X" + str(x/10) + " Y" + str(y/10) +">>" + fileid)
-		os.system("echo G1 X" + str(x/10) + " Y" + str(tmpy/10) + ">>" + fileid)
+			else:
+				if (gimg[x][y-1]<=223 and tmpy>0):
+					os.system("echo G1 X" + str(x/10) + " Y" + str(tmpy/10) + ">>" + fileid)
+					tmpy=0
 		os.system("echo G0 X" + str(x/10) + " Y" + str(cy) + ">>" + fileid)
 		print "direction1 -> %0.1f %%" %((x*100.0)/height)
 def direction2():
@@ -38,7 +40,7 @@ def direction2():
 				if gimg[x-1][y]<=191:
 					os.system("echo G1 X" + str(x/10) + " Y" + str(y/10) + ">>" + fileid)
 				else:
-					os.system("echo G0 X" + str((x+1)/10) + " Y" + str(y/10) +">>" + fileid)
+					os.system("echo G0 X" + str(x/10) + " Y" + str(y/10) +">>" + fileid)
 		os.system("echo G0 X" + str(cx) + " Y" + str(y/10) + ">>" + fileid)
 		print "direction2 -> %0.1f %%" %((y*100.0)/width)
 #pic to gray
