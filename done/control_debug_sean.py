@@ -9,3 +9,5 @@ for x in range(height):
 	for y in range(width):
 		print "[%s][%s]=%s" %(x,y,gimg[x][y])
 
+cv2.imshow("gray",gimg)
+cv2.waitKey(0)
