@@ -12,22 +12,20 @@ def makefile(filename):
 
 #direction top to bottom
 def direction1():
-	cy=0
-	tmpy=0
 	os.system("echo G17" + ">>" + fileid)
 	os.system("echo M3 S1000" + ">>" + fileid)
 	os.system("echo G0 X0 Y0" + ">>" + fileid)
-	for x in range(0,height,2):
+	for x in range(0,height,10):
+		print "%d" %(x)
 		for y in range(width):
 			if gimg[x][y]<=223:
-				tmpy=y
-				if gimg[x][y-1]>223:
-					os.system("echo G0 X" + str(x/10) + " Y" + str(y/10) +">>" + fileid)
-			else:
-				if (gimg[x][y-1]<=223 and tmpy>0):
-					os.system("echo G1 X" + str(x/10) + " Y" + str(tmpy/10) + ">>" + fileid)
-					tmpy=0
-		os.system("echo G0 X" + str(x/10) + " Y" + str(cy) + ">>" + fileid)
+				if (gimg[x][y-1]>223 or y==0):
+					os.system("echo G0 X" + str(x/10) + " Y" + str(y/10) + ">>" + fileid)
+				elif y==(width-1):
+					os.system("echo G1 X" + str(x/10) + " Y" + str(y/10) + ">>" + fileid)
+			elif (gimg[x][y-1]<=223 and y>0):
+				os.system("echo G1 X" + str(x/10) + " Y" + str((y-1)/10) + ">>" + fileid)
+				
 		print "direction1 -> %0.1f %%" %((x*100.0)/height)
 def direction2():
 	cx=0

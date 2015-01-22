@@ -56,8 +56,8 @@ if child0==0:
 elif child1==0: 
 	ppid1=os.getpid()
 	print "Child1 PID:%d" %(ppid1)
-	makefile(ppid1)
-	direction2()
+#	makefile(ppid1)
+#	direction2()
 else: 
 	print "Parent PID:%d" %(os.getpid())
 
