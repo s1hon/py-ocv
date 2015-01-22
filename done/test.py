@@ -18,15 +18,16 @@ def direction1():
 	for x in range(0,height,10):
 		print "%d" %(x)
 		for y in range(width):
-			if gimg[x][y]<=223:
-				if (gimg[x][y-1]>223 or y==0):
+			if gimg[x][y]<=223: # black
+				if (gimg[x][y-1]>223 or y==0): # white || y=0
 					os.system("echo G0 X" + str(x/10) + " Y" + str(y/10) + ">>" + fileid)
-				elif y==(width-1):
+				elif y==(width-1): # if y has gone end.
 					os.system("echo G1 X" + str(x/10) + " Y" + str(y/10) + ">>" + fileid)
-			elif (gimg[x][y-1]<=223 and y>0):
+			elif (gimg[x][y-1]<=223 and y>0): # black && y > 0
 				os.system("echo G1 X" + str(x/10) + " Y" + str((y-1)/10) + ">>" + fileid)
-				
+
 		print "direction1 -> %0.1f %%" %((x*100.0)/height)
+
 def direction2():
 	cx=0
 	os.system("echo G17" + ">>" + fileid)
@@ -55,12 +56,12 @@ if child0==0:
 	print "Child0 PID:%d" %(ppid0)
 	makefile(ppid0)
 	direction1()
-elif child1==0: 
+elif child1==0:
 	ppid1=os.getpid()
 	print "Child1 PID:%d" %(ppid1)
 #	makefile(ppid1)
 #	direction2()
-else: 
+else:
 	print "Parent PID:%d" %(os.getpid())
 
 #cv2.imshow('pic-gray',gimg)
