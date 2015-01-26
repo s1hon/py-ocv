@@ -230,7 +230,7 @@ def logout():
     return redirect(url_for('show_index'))
 
 ### Creating Gcode ###
-def my_function(print_id):
+def gcode_created(print_id):
     time.sleep(5)
     print print_id
 
@@ -265,10 +265,11 @@ def set_demo():
 
 #======== for test ========#
 @app.route('/sendgcode')
-def sendgcode():
+def sendgcode(print_id=None):
     val="G0 X0 \n G0 X1"
+
     url = 'http://192.168.0.102:8080/api/uploadGcode'
-    payload = {'val': 'G0 X0 \n G0 X1'}
+    payload = {'val': val}
     headers = {'content-type': 'application/json'}
     r = requests.post(url, data=payload, headers=headers)
     flash('列印資訊已傳送!')
@@ -294,6 +295,6 @@ if __name__ == '__main__':
     app.logger.addHandler(handler)
     ###### for LOG ######
 
-    app.run(host='0.0.0.0',port=80,threaded=True)
-    # app.run(threaded=True)
+    app.run(host='0.0.0.0',port=80)
+    # app.run()
 
