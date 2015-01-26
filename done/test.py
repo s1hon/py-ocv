@@ -25,6 +25,7 @@ def direction1():
 			elif (gimg[x][y-1]<=blv1 and y>0):
 				os.system("echo G1 X" + str(x/20) + " Y" + str((y-1)/20) + ">>" + fileid)
 		print "direction1 -> %0.1f %%" %((x*100.0)/height)
+
 def direction2():
 	for y in range(0,width,10):
 		for x in range(height):
@@ -64,9 +65,10 @@ if child0==0:
 	print "Child0 PID:%d" %(ppid0)
 	makefile(ppid0)
 	direction1()
-elif child1==0: 
+elif child1==0:
 	ppid1=os.getpid()
 	print "Child1 PID:%d" %(ppid1)
+<<<<<<< HEAD
 	makefile(ppid1)
 	direction2()
 
@@ -76,6 +78,11 @@ elif child1==0:
 #	makefile(ppid2)
 #	direction3()
 else: 
+=======
+#	makefile(ppid1)
+#	direction2()
+else:
+>>>>>>> a53e57679b838aee0cf39c30da57b36d965e58a9
 	print "Parent PID:%d" %(os.getpid())
 
 
