@@ -79,7 +79,7 @@ def show_entries(grbl=0):
         cur = g.db.execute('select create_time, print_id, stu_id, name, phone, status from prints where status<>"4" order by status desc,create_time asc')
         entries = [dict(create_time=row[0],print_id=row[1],stu_id=row[2],name=row[3],phone=row[4],status=row[5]) for row in cur.fetchall()]
     # return render_template('show_entries.html', entries=entries,printnow=printnow)
-    return render_template('show_entries.html', entries=entries,printnow=get_print_now_id(),title=title)
+    return render_template('show_entries.html', entries=entries,printnow=get_print_now_id(),title=title,grbl=grbl)
 
 
 # 新增頁面
