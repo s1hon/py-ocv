@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+<script>
+$(function(){
+        $.ajax({
+        type: "POST",
+        url: "http://192.168.1.113:8080/api/uploadGcode",
+        data: {{ data }},
+        dataType: "json",
+        success: function() {
+            $(location).attr('href',"http://192.168.0.102:8080");
+        }
+
+        });
+
+    });
+</script>

@@ -268,15 +268,14 @@ def set_demo():
 def sendgcode(print_id):
     if not session.get('logged_in'):
         abort(401)
-    val="G0 X0 \nG0 X1"
 
-    url = 'http://192.168.0.102:8080/api/uploadGcode'
+    val="G0 X0 \nG0 X1"
+    # url = 'http://192.168.0.102:8080/api/uploadGcode'
     payload = {'val': val}
-    headers = {'content-type': 'application/json'}
-    r = requests.post(url, data=payload, headers=headers)
-    flash('列印資訊已傳送!'+print_id)
-    return redirect(url_for('show_entries'))
-    # return render_template('show_entries.html', grbl=1)
+    # headers = {'content-type': 'application/json'}
+    # r = requests.post(url, data=payload, headers=headers)
+    # flash('列印資訊已傳送!'+print_id)
+    return render_template('sendgcode.html', data=payload)
 
 #======== for test ========#
 
