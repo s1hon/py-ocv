@@ -265,6 +265,7 @@ def set_demo():
 
 #======== for test ========#
 @app.route('/sendgcode/<print_id>')
+@crossdomain(origin='*')
 def sendgcode(print_id):
     if not session.get('logged_in'):
         abort(401)
