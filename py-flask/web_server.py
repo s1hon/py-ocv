@@ -8,7 +8,7 @@ import json,requests
 # all the imports
 import sqlite3 , string , os , logging , Colorer
 from flask import Flask, request, session, g, redirect, url_for, \
-     abort, render_template, flash,jsonify
+     abort, render_template, flash,jsonify , make_response, current_app
 from contextlib import closing
 from logging.handlers import RotatingFileHandler
 from werkzeug.contrib.fixers import ProxyFix
