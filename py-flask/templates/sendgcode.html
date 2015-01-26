@@ -2,8 +2,9 @@
 
 {% block input %}
 <script>
-(function () {
-        $.ajax({
+$(function () {
+
+    $.ajax({
         type: "POST",
         url: "http://192.168.1.113:8080/api/uploadGcode",
         data: {{ data|safe }},
@@ -14,7 +15,7 @@
         }
 
         });
-    });
-})();
+
+});
 </script>
 {% endblock %}
