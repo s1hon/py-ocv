@@ -14,6 +14,11 @@
 
 <!-- DEMO -->
 {% if session.logged_in %}
+  {% if grbl %}
+  <script>
+    window.location.href ="localhost:8080";
+  </script>
+  {% endif %}
   <a href="{{ url_for('set_demo') }}" type="button" class="btn btn-default btn-block">DEMO</a>
 {% endif %}
 <!-- DEMO -->

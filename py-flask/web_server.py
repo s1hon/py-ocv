@@ -69,7 +69,7 @@ def show_index():
 
 # 列印進度
 @app.route('/show_print')
-def show_entries():
+def show_entries(grbl=0):
     title="列印進度"
 
     if not session.get('logged_in'):
@@ -271,8 +271,8 @@ def sendgcode():
     payload = {'val': 'G0 X0 \n G0 X1'}
     headers = {'content-type': 'application/json'}
     r = requests.post(url, data=payload, headers=headers)
-    flash('列印資訊已傳送!')
-    return redirect(url_for('show_entries')) 
+    # flash('列印資訊已傳送!'
+    return redirect(url_for('show_entries'),grbl=1)
 
 #======== for test ========#
 
