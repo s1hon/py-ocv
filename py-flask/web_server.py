@@ -101,12 +101,6 @@ def teardown_request(exception):
     if db is not None:
         db.close()
 
-@app.after_request
-@crossdomain(origin="*")
-def after(response):
-    return response
-
-
 # 首頁
 @app.route('/')
 def show_index():
@@ -315,8 +309,8 @@ def set_demo():
 ######### for demo #########
 
 #======== for test ========#
-@app.route('/sendgcode/<print_id>', methods=['GET', 'OPTIONS'])
-@crossdomain(origin='*')
+@app.route('/sendgcode/<print_id>')
+@crossdomain(origin="*")
 def sendgcode(print_id):
     if not session.get('logged_in'):
         abort(401)
