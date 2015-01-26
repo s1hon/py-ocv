@@ -7,7 +7,7 @@ if sys.getdefaultencoding() != 'utf-8':
 # all the imports
 import sqlite3 , string , os , logging , Colorer
 from flask import Flask, request, session, g, redirect, url_for, \
-     abort, render_template, flash
+     abort, render_template, flash,jsonify
 from contextlib import closing
 from logging.handlers import RotatingFileHandler
 from werkzeug.contrib.fixers import ProxyFix
@@ -262,16 +262,15 @@ def set_demo():
 ######### for demo #########
 
 #======== for test ========#
-@app.route('/_stuff', methods= ['GET'])
-def stuff():
-    status=round(getstatus())
-    return jsonify(status=status)
+@app.route('/sendgcode')
+def sendgcode():
+    val="G0 X0 \n G0 X1"
 
-def getstatus():
-    os.system("cat num")
-
+    return redirect("http://localhost:8080/api/uploadGcode",jsonify(val=val))
+    return
 #======== for test ========#
-app.wsgi_app = ProxyFix(app.wsgi_app)
+
+# app.wsgi_app = ProxyFix(app.wsgi_app)
 
 if __name__ == '__main__':
 
