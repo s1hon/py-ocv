@@ -13,9 +13,6 @@ from contextlib import closing
 from logging.handlers import RotatingFileHandler
 from werkzeug.contrib.fixers import ProxyFix
 
-from datetime import timedelta
-from flask import make_response , current_app
-from functools import update_wrapper
 
 # for creating gcode
 from multiprocessing import Process
@@ -47,49 +44,6 @@ def get_print_now_id():
     pt = g.db.execute('select print_id from prints where status=3')
     printnow=pt.fetchall()
     return printnow[0][0] if printnow else None
-
-
-def crossdomain(origin=None, methods=None, headers=None,
-                max_age=21600, attach_to_all=True,
-                automatic_options=True):
-    if methods is not None:
-        methods = ', '.join(sorted(x.upper() for x in methods))
-    if headers is not None and not isinstance(headers, basestring):
-        headers = ', '.join(x.upper() for x in headers)
-    if not isinstance(origin, basestring):
-        origin = ', '.join(origin)
-    if isinstance(max_age, timedelta):
-        max_age = max_age.total_seconds()
-
-    def get_methods():
-        if methods is not None:
-            return methods
-
-        options_resp = current_app.make_default_options_response()
-        return options_resp.headers['allow']
-
-    def decorator(f):
-        def wrapped_function(*args, **kwargs):
-            if automatic_options and request.method == 'OPTIONS':
-                resp = current_app.make_default_options_response()
-            else:
-                resp = make_response(f(*args, **kwargs))
-            if not attach_to_all and request.method != 'OPTIONS':
-                return resp
-
-            h = resp.headers
-
-            h['Access-Control-Allow-Origin'] = origin
-            h['Access-Control-Allow-Methods'] = get_methods()
-            h['Access-Control-Max-Age'] = str(max_age)
-            if headers is not None:
-                h['Access-Control-Allow-Headers'] = headers
-            return resp
-
-        f.provide_automatic_options = False
-        return update_wrapper(wrapped_function, f)
-    return decorator
-
 
 @app.before_request
 def before_request():
@@ -310,18 +264,18 @@ def set_demo():
 
 #======== for test ========#
 @app.route('/sendgcode/<print_id>')
-@crossdomain(origin="*")
 def sendgcode(print_id):
-    if not session.get('logged_in'):
-        abort(401)
+    # if not session.get('logged_in'):
+        # abort(401)
 
     val="G0 X0 \nG0 X1"
-    # url = 'http://192.168.0.102:8080/api/uploadGcode'
+    url = 'http://192.168.0.102:8080/api/uploadGcode'
     payload = {'val': val}
-    # headers = {'content-type': 'application/json'}
-    # r = requests.post(url, data=payload, headers=headers)
-    # flash('列印資訊已傳送!'+print_id)
-    return render_template('sendgcode.html', data=payload)
+    headers = {'content-type': 'application/json'}
+    r = requests.post(url, data=payload, headers=headers)
+    flash('列印資訊已傳送!'+print_id)
+    return redirect(url_for('show_entries'))
+    # return render_template('sendgcode.html', data=payload)
 
 #======== for test ========#
 
