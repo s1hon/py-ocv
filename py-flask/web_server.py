@@ -8,11 +8,14 @@ import json,requests
 # all the imports
 import sqlite3 , string , os , logging , Colorer
 from flask import Flask, request, session, g, redirect, url_for, \
-     abort, render_template, flash,jsonify , make_response, current_app
+     abort, render_template, flash,jsonify
 from contextlib import closing
 from logging.handlers import RotatingFileHandler
 from werkzeug.contrib.fixers import ProxyFix
-from flask.ext.cors import CORS, cross_origin
+
+
+from flask import make_response, current_app
+from functools import update_wrapper
 
 # for creating gcode
 from multiprocessing import Process
@@ -55,6 +58,12 @@ def teardown_request(exception):
     db = getattr(g, 'db', None)
     if db is not None:
         db.close()
+
+@app.after_request
+@crossdomain(origin="*")
+def after(response):
+    return response
+
 
 # 首頁
 @app.route('/')
@@ -264,8 +273,8 @@ def set_demo():
 ######### for demo #########
 
 #======== for test ========#
-@app.route('/sendgcode/<print_id>')
-@cross_origin(origin='*')
+@app.route('/sendgcode/<print_id>', methods=['GET', 'OPTIONS'])
+@crossdomain(origin='*')
 def sendgcode(print_id):
     if not session.get('logged_in'):
         abort(401)
