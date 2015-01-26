@@ -184,7 +184,7 @@ def manage_entry():
                 g.db.execute('update prints set status="3" where print_id="'+search_pid[0]+'"')
                 g.db.commit()
                 app.logger.warn('[Print] Start Printing <PID:'+search_pid[0]+'>')
-                return redirect(url_for('show_entries'))
+                return redirect(url_for('sendgcode',print_id=search_pid[0]))
             else:
                 flash('尚有列印工作進行中。','alert-danger')
                 return redirect(url_for('show_entries'))
@@ -272,7 +272,7 @@ def sendgcode(print_id=None):
     payload = {'val': val}
     headers = {'content-type': 'application/json'}
     r = requests.post(url, data=payload, headers=headers)
-    flash('列印資訊已傳送!')
+    flash('列印資訊已傳送!'+print_id)
     return redirect(url_for('show_entries'))
     # return render_template('show_entries.html', grbl=1)
 
