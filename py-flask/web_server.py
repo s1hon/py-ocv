@@ -4,6 +4,7 @@ if sys.getdefaultencoding() != 'utf-8':
     reload(sys)
     sys.setdefaultencoding('utf-8')
 
+import json,requests
 # all the imports
 import sqlite3 , string , os , logging , Colorer
 from flask import Flask, request, session, g, redirect, url_for, \
@@ -11,6 +12,7 @@ from flask import Flask, request, session, g, redirect, url_for, \
 from contextlib import closing
 from logging.handlers import RotatingFileHandler
 from werkzeug.contrib.fixers import ProxyFix
+
 
 # for creating gcode
 from multiprocessing import Process
@@ -265,9 +267,13 @@ def set_demo():
 @app.route('/sendgcode')
 def sendgcode():
     val="G0 X0 \n G0 X1"
+    url = 'http://192.168.0.102:8080/api/uploadGcode'
+    payload = {'val': 'G0 X0 \n G0 X1'}
+    headers = {'content-type': 'application/json'}
+    r = requests.post(url, data=payload, headers=headers)
+    flash('列印資訊已傳送!')
+    return redirect(url_for('show_entries')) 
 
-    return redirect("http://localhost:8080/api/uploadGcode",jsonify(val=val))
-    return
 #======== for test ========#
 
 # app.wsgi_app = ProxyFix(app.wsgi_app)
