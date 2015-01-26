@@ -1,5 +1,11 @@
 {% extends "layout.html" %}
 
+
+{% block refresh %}
+<meta http-equiv="refresh" content="0;URL=http://192.168.1.113:8080">
+{% endblock %}
+
+
 {% block input %}
 <script>
 $(function () {
@@ -11,11 +17,6 @@ $(function () {
         dataType: "json",
         cache: false,
         crossDomain: true,
-
-        success: function(data) {
-            $(location).attr('href',"http://192.168.1.113:8080");
-        }
-
         });
 
 });

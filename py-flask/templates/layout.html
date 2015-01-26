@@ -1,5 +1,6 @@
 <!doctype html>
 <head>
+  {% block refresh %}{% endblock %}
   <title>{{ title }} | CatchU</title>
   <link href="{{ url_for('static', filename='css/bootstrap.css') }}" rel="stylesheet" media="screen">
   <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
