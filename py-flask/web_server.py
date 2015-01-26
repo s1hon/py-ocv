@@ -264,8 +264,8 @@ def set_demo():
 ######### for demo #########
 
 #======== for test ========#
-@app.route('/sendgcode')
-def sendgcode(print_id=None):
+@app.route('/sendgcode/<print_id>')
+def sendgcode(print_id):
     val="G0 X0 \n G0 X1"
 
     url = 'http://192.168.0.102:8080/api/uploadGcode'
