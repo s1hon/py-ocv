@@ -271,7 +271,7 @@ def sendgcode():
     payload = {'val': 'G0 X0 \n G0 X1'}
     headers = {'content-type': 'application/json'}
     r = requests.post(url, data=payload, headers=headers)
-    flash('列印資訊已傳送!'
+    flash('列印資訊已傳送!')
     return redirect(url_for('show_entries'))
     # return render_template('show_entries.html', grbl=1)
 
