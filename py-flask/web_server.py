@@ -12,7 +12,7 @@ from flask import Flask, request, session, g, redirect, url_for, \
 from contextlib import closing
 from logging.handlers import RotatingFileHandler
 from werkzeug.contrib.fixers import ProxyFix
-
+from flask.ext.cors import CORS, cross_origin
 
 # for creating gcode
 from multiprocessing import Process
@@ -265,7 +265,7 @@ def set_demo():
 
 #======== for test ========#
 @app.route('/sendgcode/<print_id>')
-@crossdomain(origin='*')
+@cross_origin(origin='*')
 def sendgcode(print_id):
     if not session.get('logged_in'):
         abort(401)
