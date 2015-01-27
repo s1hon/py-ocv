@@ -246,11 +246,10 @@ def gcode_creater(print_id):
 def sendgcode(print_id):
     time.sleep(1)
     val="G0 X0 \nG0 X1"
-    url = 'http://192.168.0.102:8080/api/uploadGcode'
+    url = 'http://192.168.0.107:8080/api/uploadGcode'
     payload = {'val': val}
     headers = {'content-type': 'application/json'}
     r = requests.post(url, data=payload, headers=headers)
-
 
 
 ###################################
