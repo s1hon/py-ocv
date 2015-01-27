@@ -59,10 +59,8 @@ def teardown_request(exception):
 @app.route('/')
 def show_index():
     title="歡迎來到 CatchU"
-    # app.logger.info('User at index')
-    # app.logger.warn('yyyy')
-    # app.logger.error('zzzz')
-    app.logger.warn('[Hello] Welcome user '+request.remote_addr)
+    # recoding user ip
+    # app.logger.warn('[Hello] Welcome user '+request.remote_addr)
     return render_template('index.html',title=title,printnow=get_print_now_id())
 
 
@@ -101,7 +99,7 @@ def add_entry():
 
             # Background creating gcode
             print_id=totalmax + request.form['stu_id'][-3:]
-            gcode = Process(target=my_function, args=(print_id,))
+            gcode = Process(target=gcode_creater, args=(print_id,))
             gcode.start()
 
             return redirect(url_for('show_entries'))
@@ -183,7 +181,11 @@ def manage_entry():
                 g.db.execute('update prints set status="3" where print_id="'+search_pid[0]+'"')
                 g.db.commit()
                 app.logger.warn('[Print] Start Printing <PID:'+search_pid[0]+'>')
-                return redirect(url_for('sendgcode',print_id=search_pid[0]))
+                sendgd = Process(target=sendgcode, args=(search_pid[0],))
+                sendgd.start()
+                flash('列印資訊已傳送!'+print_id)
+                return redirect(url_for('show_entries'))
+
             else:
                 flash('尚有列印工作進行中。','alert-danger')
                 return redirect(url_for('show_entries'))
@@ -229,19 +231,26 @@ def logout():
     return redirect(url_for('show_index'))
 
 ### Creating Gcode ###
-def gcode_created(print_id):
+def gcode_creater(print_id):
     time.sleep(5)
     print print_id
-
     g.db = connect_db()
-
     g.db.execute('update prints set status="1" where print_id="'+print_id+'"')
     g.db.commit()
     app.logger.info('[Gcode] Creating Done <PID:'+print_id+'>')
-
     db = getattr(g, 'db', None)
     if db is not None:
         db.close()
+
+### Sending Gcode Module ###
+def sendgcode(print_id):
+    time.sleep(1)
+    val="G0 X0 \nG0 X1"
+    url = 'http://192.168.0.102:8080/api/uploadGcode'
+    payload = {'val': val}
+    headers = {'content-type': 'application/json'}
+    r = requests.post(url, data=payload, headers=headers)
+
 
 
 ###################################
@@ -262,22 +271,7 @@ def set_demo():
     return redirect(url_for('show_entries'))
 ######### for demo #########
 
-#======== for test ========#
-@app.route('/sendgcode/<print_id>')
-def sendgcode(print_id):
-    # if not session.get('logged_in'):
-        # abort(401)
 
-    val="G0 X0 \nG0 X1"
-    url = 'http://192.168.0.102:8080/api/uploadGcode'
-    payload = {'val': val}
-    headers = {'content-type': 'application/json'}
-    r = requests.post(url, data=payload, headers=headers)
-    flash('列印資訊已傳送!'+print_id)
-    return redirect(url_for('show_entries'))
-    # return render_template('sendgcode.html', data=payload)
-
-#======== for test ========#
 
 # app.wsgi_app = ProxyFix(app.wsgi_app)
 
