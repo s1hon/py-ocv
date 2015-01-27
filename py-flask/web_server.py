@@ -184,7 +184,7 @@ def manage_entry():
                 sendgd = Process(target=sendgcode, args=(search_pid[0],))
                 sendgd.start()
                 flash('列印資訊已傳送!'+search_pid[0])
-                return redirect(url_for('show_entries'))
+                return redirect("http://192.168.0.107:8080")
 
             else:
                 flash('尚有列印工作進行中。','alert-danger')
