@@ -4,6 +4,7 @@ if sys.getdefaultencoding() != 'utf-8':
     reload(sys)
     sys.setdefaultencoding('utf-8')
 
+
 import json,requests
 # all the imports
 import sqlite3 , string , os , logging , Colorer
