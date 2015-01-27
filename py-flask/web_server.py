@@ -183,7 +183,7 @@ def manage_entry():
                 app.logger.warn('[Print] Start Printing <PID:'+search_pid[0]+'>')
                 sendgd = Process(target=sendgcode, args=(search_pid[0],))
                 sendgd.start()
-                flash('列印資訊已傳送!'+print_id)
+                flash('列印資訊已傳送!'+search_pid[0])
                 return redirect(url_for('show_entries'))
 
             else:
