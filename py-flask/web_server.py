@@ -25,6 +25,7 @@ SECRET_KEY = '987654321'
 USERNAME = 'admin'
 PASSWORD = '123456'
 SU_CON = None
+GRBLWEB = 'http://192.168.0.107:8080'
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -180,11 +181,11 @@ def manage_entry():
             if not print_now_pid:
                 g.db.execute('update prints set status="3" where print_id="'+search_pid[0]+'"')
                 g.db.commit()
-                app.logger.warn('[Print] Start Printing <PID:'+search_pid[0]+'>')
+                app.logger.warn('[Print] Sending Gcode to Grblweb <PID:'+search_pid[0]+'>')
                 sendgd = Process(target=sendgcode, args=(search_pid[0],))
                 sendgd.start()
                 flash('列印資訊已傳送!'+search_pid[0])
-                return redirect("http://192.168.0.107:8080")
+                return redirect(app.config['GRBLWEB'])
 
             else:
                 flash('尚有列印工作進行中。','alert-danger')
@@ -246,7 +247,7 @@ def gcode_creater(print_id):
 def sendgcode(print_id):
     time.sleep(1)
     val="G0 X0 \nG0 X1"
-    url = 'http://192.168.0.107:8080/api/uploadGcode'
+    url = app.config['GRBLWEB']+'/api/uploadGcode'
     payload = {'val': val}
     headers = {'content-type': 'application/json'}
     r = requests.post(url, data=payload, headers=headers)
