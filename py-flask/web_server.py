@@ -184,7 +184,6 @@ def manage_entry():
                 app.logger.warn('[Print] Sending Gcode to Grblweb <PID:'+search_pid[0]+'>')
                 sendgd = Process(target=sendgcode, args=(search_pid[0],))
                 sendgd.start()
-                flash('列印資訊已傳送!'+search_pid[0])
                 return redirect(app.config['GRBLWEB'])
 
             else:
@@ -279,7 +278,6 @@ if __name__ == '__main__':
 
     ###### for demo ######
     os.system('cat ./demo_tab.db > ./pt_tab.db')
-    # os.system('open http://127.0.0.1:5000/')
     ###### for demo ######
 
     ###### for LOG ######
