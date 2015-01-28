@@ -14,13 +14,6 @@
 <div class="alert alert-danger"><strong>Error:</strong>{{ error }}</div>
 {% endif %}
 
-<!-- DEMO -->
-{% if session.logged_in %}
-  <a href="{{ url_for('set_demo') }}" type="button" class="btn btn-default btn-block">DEMO</a>
-{% endif %}
-<!-- DEMO -->
-
-
 <br>
 <table id="status" class="table table-bordered text-center">
   <tr>
@@ -78,6 +71,7 @@
             <input type="submit" class="btn btn-default" name="submit" value="Wait" disabled>
             {% elif entry.status == 3 %}
             <input type="submit" class="btn btn-danger" name="submit" value="停止">
+            <a href="{{ url_for('print_done') }}" class="btn btn-primary ">完成</a>
             {% elif entry.status == 2 %}
             <input type="submit" class="btn btn-success" name="submit" value="領取">
             {% endif %}

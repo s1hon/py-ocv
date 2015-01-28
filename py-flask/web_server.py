@@ -26,7 +26,7 @@ SECRET_KEY = '987654321'
 USERNAME = 'admin'
 PASSWORD = '123456'
 SU_CON = None
-GRBLWEB = 'http://192.168.0.107:8080'
+HOSTWEB = 'http://120.117.73.74'
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -180,12 +180,17 @@ def manage_entry():
             print_now_pid=print_now_pid.fetchone()
 
             if not print_now_pid:
+
+                # 處理列印程序
                 g.db.execute('update prints set status="3" where print_id="'+search_pid[0]+'"')
                 g.db.commit()
-                app.logger.warn('[Print] Sending Gcode to Grblweb <PID:'+search_pid[0]+'>')
-                sendgd = Process(target=sendgcode, args=(search_pid[0],))
+                app.logger.error('[Print] Start Printing <PID:'+search_pid[0]+'>')
+
+                val=compilegcode(search_pid[0])
+                sendgd = Process(target=sendgcode, args=(search_pid[0],val,))
                 sendgd.start()
-                return redirect(app.config['GRBLWEB'])
+
+                return redirect(app.config['HOSTWEB']+':8080')
 
             else:
                 flash('尚有列印工作進行中。','alert-danger')
@@ -202,6 +207,17 @@ def manage_entry():
             return redirect(url_for('show_entries'))
         else:
             abort(401)
+
+
+# 列印完畢
+@app.route('/show_print/done/')
+def print_done():
+    if not session.get('logged_in'):
+        abort(401)
+    g.db.execute('update prints set status="2" where status="3"')
+    g.db.commit()
+    return redirect(url_for('show_entries'))
+
 
 
 # 登入/出
@@ -233,8 +249,7 @@ def logout():
 
 ### Creating Gcode ###
 def gcode_creater(print_id):
-    time.sleep(5)
-    print print_id
+    time.sleep(8)
     g.db = connect_db()
     g.db.execute('update prints set status="1" where print_id="'+print_id+'"')
     g.db.commit()
@@ -243,35 +258,27 @@ def gcode_creater(print_id):
     if db is not None:
         db.close()
 
+### Compile Gcode ###
+def compilegcode(print_id):
+    with open ('./static/gcodes/' + print_id + '.gcode',"r") as myfile:
+        val=myfile.read().replace('\n', '')
+    return val
+
 ### Sending Gcode Module ###
-def sendgcode(print_id):
-    time.sleep(1)
-    val="G0 X0 \nG0 X1"
-    url = app.config['GRBLWEB']+'/api/uploadGcode'
+def sendgcode(print_id,val):
+    time.sleep(0.5)
+    url = app.config['HOSTWEB']+':8080/api/uploadGcode'
     payload = {'val': val}
     headers = {'content-type': 'application/json'}
     r = requests.post(url, data=payload, headers=headers)
 
 
 ###################################
-## ████   █████  ██   ██   █████ ##
-## █   █  █      █ █ █ █   █   █ ##
-## █    █ ████   █  █  █   █   █ ##
-## █   █  █      █  █  █   █   █ ##
-## ████   █████  █     █   █████ ##
+## █████████████████████████████ ##
+## █████████████████████████████ ##
+## █████████████████████████████ ##
+## █████████████████████████████ ##
 ###################################
-
-######### for demo #########
-@app.route('/show_print/demo/')
-def set_demo():
-    if not session.get('logged_in'):
-        abort(401)
-    g.db.execute('update prints set status="2" where status="3"')
-    g.db.commit()
-    return redirect(url_for('show_entries'))
-######### for demo #########
-
-
 
 # app.wsgi_app = ProxyFix(app.wsgi_app)
 
@@ -290,5 +297,5 @@ if __name__ == '__main__':
     ###### for LOG ######
 
     app.run(host='0.0.0.0',port=80)
-    # app.run()
+    # app.run(threaded=True)
 
