@@ -20,6 +20,9 @@ h2              { font-size: 1.2em; }
 .status-r-margin{ margin: 15px; }
 .flash-bg       { font-size: 35px;}
 
+.done-button {
+    margin: 8px;
+}
 
 .statusbar      {
     display: none;

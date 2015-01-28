@@ -4,13 +4,16 @@ if sys.getdefaultencoding() != 'utf-8':
     reload(sys)
     sys.setdefaultencoding('utf-8')
 
+
+import json,requests
 # all the imports
 import sqlite3 , string , os , logging , Colorer
 from flask import Flask, request, session, g, redirect, url_for, \
-     abort, render_template, flash
+     abort, render_template, flash,jsonify
 from contextlib import closing
 from logging.handlers import RotatingFileHandler
 from werkzeug.contrib.fixers import ProxyFix
+
 
 # for creating gcode
 from multiprocessing import Process
@@ -23,6 +26,7 @@ SECRET_KEY = '987654321'
 USERNAME = 'admin'
 PASSWORD = '123456'
 SU_CON = None
+HOSTWEB = 'http://120.117.73.74'
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -43,7 +47,6 @@ def get_print_now_id():
     printnow=pt.fetchall()
     return printnow[0][0] if printnow else None
 
-
 @app.before_request
 def before_request():
     g.db = connect_db()
@@ -58,16 +61,14 @@ def teardown_request(exception):
 @app.route('/')
 def show_index():
     title="歡迎來到 CatchU"
-    # app.logger.info('User at index')
-    # app.logger.warn('yyyy')
-    # app.logger.error('zzzz')
-    app.logger.warn('[Hello] Welcome user '+request.remote_addr)
+    # recoding user ip
+    # app.logger.warn('[Hello] Welcome user '+request.remote_addr)
     return render_template('index.html',title=title,printnow=get_print_now_id())
 
 
 # 列印進度
 @app.route('/show_print')
-def show_entries():
+def show_entries(grbl=0):
     title="列印進度"
 
     if not session.get('logged_in'):
@@ -77,7 +78,7 @@ def show_entries():
         cur = g.db.execute('select create_time, print_id, stu_id, name, phone, status from prints where status<>"4" order by status desc,create_time asc')
         entries = [dict(create_time=row[0],print_id=row[1],stu_id=row[2],name=row[3],phone=row[4],status=row[5]) for row in cur.fetchall()]
     # return render_template('show_entries.html', entries=entries,printnow=printnow)
-    return render_template('show_entries.html', entries=entries,printnow=get_print_now_id(),title=title)
+    return render_template('show_entries.html', entries=entries,printnow=get_print_now_id(),title=title,grbl=grbl)
 
 
 # 新增頁面
@@ -100,7 +101,7 @@ def add_entry():
 
             # Background creating gcode
             print_id=totalmax + request.form['stu_id'][-3:]
-            gcode = Process(target=my_function, args=(print_id,))
+            gcode = Process(target=gcode_creater, args=(print_id,))
             gcode.start()
 
             return redirect(url_for('show_entries'))
@@ -179,10 +180,18 @@ def manage_entry():
             print_now_pid=print_now_pid.fetchone()
 
             if not print_now_pid:
+
+                # 處理列印程序
                 g.db.execute('update prints set status="3" where print_id="'+search_pid[0]+'"')
                 g.db.commit()
-                app.logger.warn('[Print] Start Printing <PID:'+search_pid[0]+'>')
-                return redirect(url_for('show_entries'))
+                app.logger.error('[Print] Start Printing <PID:'+search_pid[0]+'>')
+
+                val=compilegcode(search_pid[0])
+                sendgd = Process(target=sendgcode, args=(search_pid[0],val,))
+                sendgd.start()
+
+                return redirect(app.config['HOSTWEB']+':8080')
+
             else:
                 flash('尚有列印工作進行中。','alert-danger')
                 return redirect(url_for('show_entries'))
@@ -198,6 +207,17 @@ def manage_entry():
             return redirect(url_for('show_entries'))
         else:
             abort(401)
+
+
+# 列印完畢
+@app.route('/show_print/done/')
+def print_done():
+    if not session.get('logged_in'):
+        abort(401)
+    g.db.execute('update prints set status="2" where status="3"')
+    g.db.commit()
+    return redirect(url_for('show_entries'))
+
 
 
 # 登入/出
@@ -228,56 +248,44 @@ def logout():
     return redirect(url_for('show_index'))
 
 ### Creating Gcode ###
-def my_function(print_id):
-    time.sleep(5)
-    print print_id
-
+def gcode_creater(print_id):
+    time.sleep(8)
     g.db = connect_db()
-
     g.db.execute('update prints set status="1" where print_id="'+print_id+'"')
     g.db.commit()
     app.logger.info('[Gcode] Creating Done <PID:'+print_id+'>')
-
     db = getattr(g, 'db', None)
     if db is not None:
         db.close()
 
+### Compile Gcode ###
+def compilegcode(print_id):
+    with open ('./static/gcodes/' + print_id + '.gcode',"r") as myfile:
+        val=myfile.read().replace('\n', '')
+    return val
+
+### Sending Gcode Module ###
+def sendgcode(print_id,val):
+    time.sleep(0.5)
+    url = app.config['HOSTWEB']+':8080/api/uploadGcode'
+    payload = {'val': val}
+    headers = {'content-type': 'application/json'}
+    r = requests.post(url, data=payload, headers=headers)
+
 
 ###################################
-## ████   █████  ██   ██   █████ ##
-## █   █  █      █ █ █ █   █   █ ##
-## █    █ ████   █  █  █   █   █ ##
-## █   █  █      █  █  █   █   █ ##
-## ████   █████  █     █   █████ ##
+## █████████████████████████████ ##
+## █████████████████████████████ ##
+## █████████████████████████████ ##
+## █████████████████████████████ ##
 ###################################
 
-######### for demo #########
-@app.route('/show_print/demo/')
-def set_demo():
-    if not session.get('logged_in'):
-        abort(401)
-    g.db.execute('update prints set status="2" where status="3"')
-    g.db.commit()
-    return redirect(url_for('show_entries'))
-######### for demo #########
-
-#======== for test ========#
-@app.route('/_stuff', methods= ['GET'])
-def stuff():
-    status=round(getstatus())
-    return jsonify(status=status)
-
-def getstatus():
-    os.system("cat num")
-
-#======== for test ========#
-app.wsgi_app = ProxyFix(app.wsgi_app)
+# app.wsgi_app = ProxyFix(app.wsgi_app)
 
 if __name__ == '__main__':
 
     ###### for demo ######
     os.system('cat ./demo_tab.db > ./pt_tab.db')
-    # os.system('open http://127.0.0.1:5000/')
     ###### for demo ######
 
     ###### for LOG ######
@@ -288,6 +296,6 @@ if __name__ == '__main__':
     app.logger.addHandler(handler)
     ###### for LOG ######
 
-    app.run(host='0.0.0.0',port=80,threaded=True)
+    app.run(host='0.0.0.0',port=80)
     # app.run(threaded=True)
 
