@@ -2,12 +2,15 @@ import cv2
 import numpy as np,sys
 import os
 import time
+from multiprocessing import Process
+
 #make file save g-code
 def makefile(filename):
 	global fileid
 	fileid = str(filename) + '.nc'
 	f = open(fileid,'w')
 	f.close()
+
 #direction top to bottom
 def direction1():
 	cy=0
@@ -41,27 +44,46 @@ def direction2():
 gimg = cv2.imread('picture.jpg',cv2.IMREAD_GRAYSCALE)
 height, width = gimg.shape
 
-child0=os.fork()
-if child0!=0:
-	child1=os.fork()
 
-if child0==0:
-	ppid0=os.getpid()
-	print "Child0 PID:%d" %(ppid0)
-	makefile(ppid0)
-	direction1()
-elif child1==0:
-	ppid1=os.getpid()
-	print "Child1 PID:%d" %(ppid1)
-	# makefile(ppid1)
-	# direction2()
-else:
-	print "Parent PID:%d" %(os.getpid())
+makefile('t128')
 
+p0 = Process(target=direction1)
+p0.start()
+
+p1 = Process(target=direction2)
+p1.start()
+
+p0.join()
+p1.join()
+
+
+
+
+
+
+#child0=os.fork()
+#if child0!=0:
+#	child1=os.fork()
+
+#if child0==0:
+#	ppid0=os.getpid()
+#	print "Child0 PID:%d" %(ppid0)
+#	makefile(ppid0)
+#	direction1()
+#elif child1==0: 
+#	ppid1=os.getpid()
+#	print "Child1 PID:%d" %(ppid1)
+#	makefile(ppid1)
+#	direction2()
+#else: 
+#	print "Parent PID:%d" %(os.getpid())
 
 #cv2.imshow('pic-gray',gimg)
 #cv2.waitKey(0)
-#0-31 black
+
+
+
+#0-31	 black
 #32-63
 #64-95
 #96-127
