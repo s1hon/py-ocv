@@ -17,7 +17,6 @@ def direction1(q,gimg):
     height, width = gimg.shape
     q_tmp="G17\nM3 S1000\nG0 X0 Y0\n"
     for x in range(0,height,10):
-        print "%d" %(x)
         for y in range(width):
             if gimg[x][y]<=223: # black
                 if (gimg[x][y-1]>223 or y==0): # white || y=0
@@ -31,23 +30,22 @@ def direction1(q,gimg):
     q.close
     print("d1 DONE!")
 
-
 def direction2(q,gimg):
     height, width = gimg.shape
     q_tmp=''
-    for y in range(0,width,2):
+    for y in range(0,width,10):
         for x in range(height):
-            if gimg[x][y]<=191:
-                if gimg[x-1][y]<=191:
-                    q_tmp += "G1 X" + str(x/20) + " Y" + str(y/20) + "\n"
-                else:
-                    q_tmp += "G0 X" + str(x/20) + " Y" + str(y/20) + "\n"
-        q_tmp += "G0 X0" + " Y" + str(y/20) + "\n"
-        print "direction2 -> %0.1f %%" %((y*100.0)/width)
+		if gimg[x][y]<=191: # black
+                	if (gimg[x-1][y]>191 or x==0): # white || y=0
+                    		q_tmp += "G0 X" + str(x/20) + " Y" + str(y/20) + "\n"
+                	elif x==(height-1): # if y has gone end.
+                    		q_tmp += "G1 X" + str(x/20) + " Y" + str(y/20) + "\n"
+            	elif (gimg[x-1][y]<=191 and x>0): # black && y > 0
+                	q_tmp += "G1 X" + str((x-1)/20) + " Y" + str(y/20) + "\n"
+        print "direction2 -> %0.1f %%" %((x*100.0)/height)
     q.send(q_tmp)
     q.close
     print("d2 DONE!")
-
 
 
 if __name__ == '__main__':
@@ -89,6 +87,7 @@ if __name__ == '__main__':
     file_id = str(filename) + '.nc'
     f = open(file_id,'w')
     f.write(q0_r+q1_r)
+    f.write(q1_r)
     f.close()
 
 
