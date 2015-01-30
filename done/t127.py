@@ -2,7 +2,7 @@ import cv2
 import numpy as np,sys
 import os
 import time
-from multiprocessing import Process, Queue
+from multiprocessing import Process, Pipe
 
 #make file save g-code
 # def makefile(filename):
@@ -27,8 +27,9 @@ def direction1(q,gimg):
             elif (gimg[x][y-1]<=223 and y>0): # black && y > 0
                 q_tmp += "G1 X" + str(x/20) + " Y" + str((y-1)/20) + "\n"
         print "direction1 -> %0.1f %%" %((x*100.0)/height)
-    q.put(q_tmp)
-
+    q.send(q_tmp)
+    q.close
+    print("d1 DONE!")
 
 
 def direction2(q,gimg):
@@ -43,32 +44,52 @@ def direction2(q,gimg):
                     q_tmp += "G0 X" + str(x/20) + " Y" + str(y/20) + "\n"
         q_tmp += "G0 X0" + " Y" + str(y/20) + "\n"
         print "direction2 -> %0.1f %%" %((y*100.0)/width)
-    q.put(q_tmp)
+    q.send(q_tmp)
+    q.close
+    print("d2 DONE!")
 
 
 
-#pic to gray
-gimg = cv2.imread('picture.jpg',cv2.IMREAD_GRAYSCALE)
+if __name__ == '__main__':
+    #pic to gray
+    gimg = cv2.imread('picture.jpg',cv2.IMREAD_GRAYSCALE)
 
-q1 = Queue()
-q2 = Queue()
+    # parent_conn, child_conn = Pipe()
 
-p0 = Process(target=direction1,args=(q1,gimg,))
-p1 = Process(target=direction2,args=(q2,gimg,))
-p0.start()
-p1.start()
-p0.join()
-p1.join()
+    q0x,q0 = Pipe()
+    q1x,q1 = Pipe()
 
-q1_r = q1.get()
-q2_r = q2.get()
+    p0 = Process(target=direction1,args=(q0,gimg,))
+    p1 = Process(target=direction2,args=(q1,gimg,))
+    p0.start()
+    p1.start()
 
-filename='t127'
 
-file_id = str(filename) + '.nc'
-f = open(file_id,'w')
-f.write(q1_r+q2_r)
-f.close()
+
+    q0_r = q0x.recv()
+    q1_r = q1x.recv()
+
+    print("End of Get the Pipe....")
+
+
+    p0.join()
+    print("p0 end!")
+
+    p1.join()
+    print("p1 end!")
+
+
+
+
+
+
+
+    print("Make the file.....")
+    filename='t127'
+    file_id = str(filename) + '.nc'
+    f = open(file_id,'w')
+    f.write(q0_r+q1_r)
+    f.close()
 
 
 #os.system(cat t127.nc  >>  t127-2.nc)
