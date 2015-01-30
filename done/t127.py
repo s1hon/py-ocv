@@ -41,7 +41,7 @@ def direction2(q,gimg):
                     q_tmp += "G1 X" + str(x/20) + " Y" + str(y/20) + "\n"
                 else:
                     q_tmp += "G0 X" + str(x/20) + " Y" + str(y/20) + "\n"
-        q_tmp += "G0 X" + str(cx) + " Y" + str(y/20) + "\n"
+        q_tmp += "G0 X0" + " Y" + str(y/20) + "\n"
         print "direction2 -> %0.1f %%" %((y*100.0)/width)
     q.put(q_tmp)
 
@@ -60,12 +60,14 @@ p1.start()
 p0.join()
 p1.join()
 
+q1_r = q1.get()
+q2_r = q2.get()
 
 filename='t127'
 
 file_id = str(filename) + '.nc'
 f = open(file_id,'w')
-f.write(q1+q2)
+f.write(q1_r+q2_r)
 f.close()
 
 
