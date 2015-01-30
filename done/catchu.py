@@ -48,12 +48,13 @@ def direction2(q,gimg):
     print("d2 DONE!")
 
 
-if __name__ == '__main__':
+
+
+def Gcode_Creater(print_id):
     #pic to gray
-    gimg = cv2.imread('picture.jpg',cv2.IMREAD_GRAYSCALE)
+    gimg = cv2.imread( print_id +'.jpg',cv2.IMREAD_GRAYSCALE)
 
     # parent_conn, child_conn = Pipe()
-
     q0x,q0 = Pipe()
     q1x,q1 = Pipe()
 
@@ -62,13 +63,9 @@ if __name__ == '__main__':
     p0.start()
     p1.start()
 
-
-
     q0_r = q0x.recv()
     q1_r = q1x.recv()
-
     print("End of Get the Pipe....")
-
 
     p0.join()
     print("p0 end!")
@@ -76,20 +73,17 @@ if __name__ == '__main__':
     p1.join()
     print("p1 end!")
 
-
-
-
-
-
-
     print("Make the file.....")
-    filename='t127'
-    file_id = str(filename) + '.nc'
+    file_id = str(print_id) + '.nc'
     f = open(file_id,'w')
     f.write(q0_r+q1_r)
     f.write(q1_r)
     f.close()
+    print("Done!")
 
+
+if __name__ == '__main__':
+    Gcode_Creater('001049')
 
 #os.system(cat t127.nc  >>  t127-2.nc)
 
