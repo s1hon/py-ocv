@@ -25,7 +25,6 @@ def direction1(q,gimg):
                     q_tmp += "G1 X" + str(x/20) + " Y" + str(y/20) + "\n"
             elif (gimg[x][y-1]<=223 and y>0): # black && y > 0
                 q_tmp += "G1 X" + str(x/20) + " Y" + str((y-1)/20) + "\n"
-        print "direction1 -> %0.1f %%" %((x*100.0)/height)
     q.send(q_tmp)
     q.close
     print("d1 DONE!")
@@ -42,7 +41,6 @@ def direction2(q,gimg):
                     		q_tmp += "G1 X" + str(x/20) + " Y" + str(y/20) + "\n"
             	elif (gimg[x-1][y]<=191 and x>0): # black && y > 0
                 	q_tmp += "G1 X" + str((x-1)/20) + " Y" + str(y/20) + "\n"
-        print "direction2 -> %0.1f %%" %((x*100.0)/height)
     q.send(q_tmp)
     q.close
     print("d2 DONE!")
