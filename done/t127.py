@@ -39,34 +39,45 @@ def direction1(q,gimg):
     	print("d1 DONE!")
 
 def direction2(q,gimg):
-#	height, width = gimg.shape
-        q_tmp=''
-	
+	q_tmp=''
 	width=3
 	height=5
-        for x in range(height-1,-1,-1):
-                for y in range(width-1,-1,-1):
-			if (y==(width-1)or (y<(width-1) and x==0)):
-				q_tmp += "G0 X" + str(x) + " Y" + str(y) + "\n"
-				tx=x
-				ty=y
-				print "X %d Y %d" %(tx,ty)
-				while (tx<(height-1) and ty >0):
-					
-					tx+=1
-					
-					ty-=1	
-				print "CX %d CY %d" %(tx,ty)	
-				q_tmp += "G1 X" + str(tx) + " Y" + str(ty) + "\n"
-#			print "[x] %d [y] %d" %(x/10,y/10)
-#			if width==height:
-#				if (y==(width-1)):
-#					q_tmp += "G0 X" + str(x) + " Y" + str(y) + "\n"
-#					if gimg[x+1][y-1] <= 
-#					q_tmp += "G1 X" + str(y) + " Y" + str(x) + "\n"
-#				elif (y<(width-1) and x==0 :
-#					q_tmp += "G0 X" + str(x) + " Y" + str(y) + "\n"
-#					q_tmp += "G1 X" + str(y) + " Y" + str(x) + "\n"
+	the_range=[]
+	for x in range(width-1,0,-1):
+		the_range.append([x,0])
+	for y in range(0,height,1):
+		the_range.append([0,y])
+	print(the_range)		
+	for t_range in the_range:
+		print t_range	
+		tx=t_range[0]
+		ty=t_range[1]
+		q_tmp += "G0 X" + str(tx) + " Y" + str(ty) + "\n"
+		print "X %d Y %d" %(tx,ty)
+		while (tx>=0 and tx<=width and ty>=0 and ty<=height ):
+			print "X1 %d Y1 %d" %(tx,ty)
+			q_tmp += "G1 X" + str(tx) + " Y" + str(ty) + "\n"	
+			tx+=1
+			ty+=1
+
+
+#	height, width = gimg.shape
+#        q_tmp=''
+	
+#	width=3
+#	height=5
+#       for x in range((height-1),-1,-1):
+#                for y in range((width-1),-1,-1):
+#			if (y==((width-1)) or (y<(width-1)) and x==0):
+#				q_tmp += "G0 X" + str(x) + " Y" + str(y) + "\n"
+#				tx=x
+#				ty=y
+#				print "X %d Y %d" %(tx,ty)
+#				while (tx<(height-1) and ty >0):
+#					tx+=1
+#					ty-=1
+#				print "CX %d CY %d" %(tx,ty)	
+#				q_tmp += "G1 X" + str(tx) + " Y" + str(ty) + "\n"
 				
 	
 	q.send(q_tmp)
