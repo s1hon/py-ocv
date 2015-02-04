@@ -6,44 +6,47 @@ from multiprocessing import Process, Pipe
 
 
 #direction top to bottom
-def direction0(q,gimg):
+def direction0(q,gimg,level):
+	color = GetLevel(level)
 	height, width = gimg.shape
 	intr=5
 	zoom=20.0
 	q_tmp="G17\nM3 S1000\nG0 X0 Y0\n"
 	for x in range(0,height,intr):
 		for y in range(width):
-			if gimg[x][y]<=223: # black
-				if (gimg[x][y-1]>223 or y==0): # white || y=0
+			if gimg[x][y]<=color: # black
+				if (gimg[x][y-1]>color or y==0): # white || y=0
 					q_tmp += "G0 X" + str(x/zoom) + " Y" + str(y/zoom) + "\n"
 				elif y==(width-1): # if y has gone end.
 					q_tmp += "G1 X" + str(x/zoom) + " Y" + str(y/zoom) + "\n"
-			elif (gimg[x][y-1]<=223 and y>0): # black && y > 0
+			elif (gimg[x][y-1]<=color and y>0): # black && y > 0
 				q_tmp += "G1 X" + str(x/zoom) + " Y" + str((y-1)/zoom) + "\n"
 	q.send(q_tmp)
 	q.close
 	print("d0 DONE!")
 
-def direction1(q,gimg):
+def direction1(q,gimg,level):
+	color = GetLevel(level)
 	height, width = gimg.shape
 	q_tmp=''
 	intr=5
 	zoom=20.0
 	for y in range(0,width,intr):
 		for x in range(height):
-			if gimg[x][y]<=191: # black
-				if (gimg[x-1][y]>191 or x==0): # white || y=0
+			if gimg[x][y]<=color: # black
+				if (gimg[x-1][y]>color or x==0): # white || y=0
 					q_tmp += "G0 X" + str(x/zoom) + " Y" + str(y/zoom) + "\n"
 				elif x==(height-1): # if y has gone end.
 					q_tmp += "G1 X" + str(x/zoom) + " Y" + str(y/zoom) + "\n"
-			elif (gimg[x-1][y]<=191 and x>0): # black && y > 0
+			elif (gimg[x-1][y]<=color and x>0): # black && y > 0
 				q_tmp += "G1 X" + str((x-1)/zoom) + " Y" + str(y/zoom) + "\n"
 	q.send(q_tmp)
 	q.close
 	print("d1 DONE!")
 
 
-def direction2(q,gimg):
+def direction2(q,gimg,level):
+	color = GetLevel(level)
 	height, width = gimg.shape
 	q_tmp=''
 	intr=5
@@ -63,14 +66,14 @@ def direction2(q,gimg):
 		print "X %d Y %d" %(tx,ty)
 		while (tx>=0 and tx+intr<height and ty>=0 and ty+intr<width ):
 			print "X1 %d Y1 %d" %(tx,ty)
-			if gimg[tx][ty]<=159: # black
+			if gimg[tx][ty]<=color: # black
 				if (tx+intr<=height and ty+intr<=width) :
-					if (gimg[tx+intr][ty+intr]<=159 or ty==0): # white || y=0
+					if (gimg[tx+intr][ty+intr]<=color or ty==0): # white || y=0
 						q_tmp += "G1 X" + str(tx/zoom) + " Y" + str(ty/zoom) + "\n"
 					elif ty==width: # if y has gone end.
 						q_tmp += "G0 X" + str(tx/zoom) + " Y" + str(ty/zoom) + "\n"
 			elif (tx+intr<height and ty+intr<width) :
-				if (gimg[tx+intr][ty+intr]<=159 and ty>0): # black && y > 0
+				if (gimg[tx+intr][ty+intr]<=color and ty>0): # black && y > 0
 					q_tmp += "G0 X" + str(tx/zoom) + " Y" + str((ty-1)/zoom) + "\n"
 			tx+=intr
 			ty+=intr
@@ -80,6 +83,24 @@ def direction2(q,gimg):
 	print("d2 DONE!")
 
 
+	
+
+
+def GetLevel(level):
+	if level == 1 :	
+		return 223
+	elif level == 2 :
+		return 191
+	elif level == 3 :
+		return 159
+	elif level == 4 :
+		return 127
+	elif level == 5 :
+		return 95
+	elif level == 6 :
+		return 63
+	elif level == 7 :
+		return 31
 
 
 if __name__ == '__main__':
@@ -89,9 +110,9 @@ if __name__ == '__main__':
 	q0x,q0 = Pipe()
 	q1x,q1 = Pipe()
 	q2x,q2 = Pipe()
-	p0 = Process(target=direction0,args=(q0,gimg,))
-	p1 = Process(target=direction1,args=(q1,gimg,))
-	p2 = Process(target=direction2,args=(q2,gimg,))
+	p0 = Process(target=direction0,args=(q0,gimg,1,))
+	p1 = Process(target=direction1,args=(q1,gimg,3,))
+	p2 = Process(target=direction2,args=(q2,gimg,5,))
 	p0.start()
 	p1.start()
 	p2.start()
