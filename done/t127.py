@@ -46,9 +46,10 @@ def direction1(q,gimg):
 def direction2(q,gimg):
 	height, width = gimg.shape
 	q_tmp=''
-	intr=20.0
+	intr=10.0
 	zoom=20
 	the_range=[]
+
 	for x in range(height-1,0,-intr):
 		the_range.append([x,0])
 	for y in range(0,width,intr):
@@ -74,25 +75,6 @@ def direction2(q,gimg):
 			tx+=intr
 			ty+=intr
 
-#	height, width = gimg.shape
-#        q_tmp=''
-
-#	width=3
-#	height=5
-#       for x in range((height-1),-1,-1):
-#                for y in range((width-1),-1,-1):
-#			if (y==((width-1)) or (y<(width-1)) and x==0):
-#				q_tmp += "G0 X" + str(x) + " Y" + str(y) + "\n"
-#				tx=x
-#				ty=y
-#				print "X %d Y %d" %(tx,ty)
-#				while (tx<(height-1) and ty >0):
-#					tx+=1
-#					ty-=1
-#				print "CX %d CY %d" %(tx,ty)
-#				q_tmp += "G1 X" + str(tx) + " Y" + str(ty) + "\n"
-
-
 	q.send(q_tmp)
 	q.close
 	print("d2 DONE!")
@@ -101,48 +83,39 @@ def direction2(q,gimg):
 
 
 if __name__ == '__main__':
-		#pic to gray
-		gimg = cv2.imread('picture.jpg',cv2.IMREAD_GRAYSCALE)
+	#pic to gray
+	gimg = cv2.imread('picture.jpg',cv2.IMREAD_GRAYSCALE)
 
-
-		q0x,q0 = Pipe()
-		q1x,q1 = Pipe()
+	q0x,q0 = Pipe()
+	q1x,q1 = Pipe()
 	q2x,q2 = Pipe()
 	p0 = Process(target=direction0,args=(q0,gimg,))
-		p1 = Process(target=direction1,args=(q1,gimg,))
+	p1 = Process(target=direction1,args=(q1,gimg,))
 	p2 = Process(target=direction2,args=(q2,gimg,))
-		p0.start()
-		p1.start()
+	p0.start()
+	p1.start()
 	p2.start()
 
-
-		q0_r = q0x.recv()
-		q1_r = q1x.recv()
+	q0_r = q0x.recv()
+	q1_r = q1x.recv()
 	q2_r = q2x.recv()
-		print("End of Get the Pipe....")
+	print("End of Get the Pipe....")
 
+	p0.join()
+	print("p0 end!")
 
-		p0.join()
-		print("p0 end!")
-
-		p1.join()
-		print("p1 end!")
+	p1.join()
+	print("p1 end!")
 
 	p2.join()
-		print("p1 end!")
+	print("p1 end!")
 
-
-		print("Make the file.....")
-		filename='t127'
-		file_id = str(filename) + '.nc'
-		f = open(file_id,'w')
-		f.write(q0_r+q1_r+q2_r)
-		f.close()
-
-
-
-
-
+	print("Make the file.....")
+	filename='t127'
+	file_id = str(filename) + '.nc'
+	f = open(file_id,'w')
+	f.write(q0_r+q1_r+q2_r)
+	f.close()
 
 #cv2.imshow('pic-gray',gimg)
 #cv2.waitKey(0)
