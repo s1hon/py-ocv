@@ -8,8 +8,8 @@ from multiprocessing import Process, Pipe
 #direction top to bottom
 def direction0(q,gimg):
 	height, width = gimg.shape
-	intr=10.0
-	zoom=20
+	intr=5
+	zoom=20.0
 	q_tmp="G17\nM3 S1000\nG0 X0 Y0\n"
 	for x in range(0,height,intr):
 		for y in range(width):
@@ -27,8 +27,8 @@ def direction0(q,gimg):
 def direction1(q,gimg):
 	height, width = gimg.shape
 	q_tmp=''
-	intr=10.0
-	zoom=20
+	intr=5
+	zoom=20.0
 	for y in range(0,width,intr):
 		for x in range(height):
 			if gimg[x][y]<=191: # black
@@ -46,8 +46,8 @@ def direction1(q,gimg):
 def direction2(q,gimg):
 	height, width = gimg.shape
 	q_tmp=''
-	intr=10.0
-	zoom=20
+	intr=5
+	zoom=20.0
 	the_range=[]
 
 	for x in range(height-1,0,-intr):
