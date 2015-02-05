@@ -82,8 +82,44 @@ def direction2(q,gimg,level):
 	q.close
 	print("d2 DONE!")
 
-
+def direction3(q,gimg,level):
+	color = GetLevel(level)
+	height, width = gimg.shape
+	q_tmp=''
+	intr=5
+	zoom=20.0
+	the_range=[]
+	for x in range(0,height,intr):
+                the_range.append([x,0])
+		print "X %d " %(x)
+        for y in range(0,width,intr):
+                the_range.append([height-1,y])
+        print(the_range)
+        for t_range in the_range:
+                print t_range
+                tx=t_range[0]
+                ty=t_range[1]
+                q_tmp += "G0 X" + str(tx/zoom) + " Y" + str(ty/zoom) + "\n"
+                print "X %d Y %d" %(tx,ty)
+                while (tx-intr>=0 and ty+intr<=width):
+                        print "X1 %d Y1 %d" %(tx,ty)
+                        if gimg[tx][ty]<=color: # black
+                                if (tx+intr<=height and ty-intr>=0) :
+					if (gimg[tx+intr][ty-intr]<=color):
+						q_tmp += "G1 X" + str(tx/zoom) + " Y" + str(ty/zoom) + "\n"
+					else:
+						q_tmp += "G0 X" + str(tx/zoom) + " Y" + str(ty/zoom) + "\n"
+			elif (tx+intr<=height and ty-intr>=0):
+				if (gimg[tx+intr][ty-intr]<=color and tx>0 ):
+					q_tmp += "G0 X" + str(tx/zoom) + " Y" + str(ty/zoom) + "\n"
+				
+                        tx-=intr
+                        ty+=intr
 	
+
+	q.send(q_tmp)
+	q.close
+	print("d3 DONE!")
 
 
 def GetLevel(level):
@@ -110,16 +146,20 @@ if __name__ == '__main__':
 	q0x,q0 = Pipe()
 	q1x,q1 = Pipe()
 	q2x,q2 = Pipe()
+	q3x,q3 = Pipe()
 	p0 = Process(target=direction0,args=(q0,gimg,1,))
 	p1 = Process(target=direction1,args=(q1,gimg,3,))
 	p2 = Process(target=direction2,args=(q2,gimg,5,))
+	p3 = Process(target=direction3,args=(q3,gimg,7,))
 	p0.start()
 	p1.start()
 	p2.start()
+	p3.start()
 
 	q0_r = q0x.recv()
 	q1_r = q1x.recv()
 	q2_r = q2x.recv()
+	q3_r = q3x.recv()
 	print("End of Get the Pipe....")
 
 	p0.join()
@@ -129,13 +169,19 @@ if __name__ == '__main__':
 	print("p1 end!")
 
 	p2.join()
-	print("p1 end!")
+	print("p2 end!")
+
+	p3.join()
+	print("p3 end!")
 
 	print("Make the file.....")
 	filename='t127'
 	file_id = str(filename) + '.nc'
 	f = open(file_id,'w')
-	f.write(q0_r+q1_r+q2_r)
+	f.write(q0_r)
+	f.write(q1_r)
+	f.write(q2_r)
+	f.write(q3_r)
 	f.close()
 
 #cv2.imshow('pic-gray',gimg)
