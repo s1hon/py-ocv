@@ -1,8 +1,8 @@
 {% extends "layout.html" %}
 {% block input %}
-  {% if error %}<div class="alert alert-danger"><strong>Error:</strong>{{ error }}</div>{% endif %}
+  {% if error %}<div class="alert alert-danger"><strong>{{ error | safe }}</strong></div>{% endif %}
 
-   <form action="{{ url_for('add_entry') }}" method=post >
+   <form action="{{ url_for('add_entry') }}" method=post enctype="multipart/form-data" >
       <div class="form-group">
 
         <div class="form-group row">
@@ -27,6 +27,15 @@
             <input type="text" class="form-control" size=30 name=phone>
           </div>
         </div>
+
+
+        <div class="form-group row">
+          <label class="col-md-1 control-label pid-id-text-bg">
+            <input type="file" name=file>
+          </label>
+        </div>
+
+
 
         <button type="submit" class="btn btn-default">新增</button>
       </div>

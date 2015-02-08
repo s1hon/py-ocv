@@ -19,9 +19,9 @@
   <tr>
     <td class="col-md-2">建立時間</td>
     <td class="col-md-1">件號</td>
-    <td class="col-md-1">學號</td>
 
     {% if session.logged_in %}
+    <td class="col-md-1">學號</td>
     <td class="col-md-1">姓名</td>
     <td class="col-md-1">手機</td>
     {% endif %}
@@ -38,10 +38,9 @@
     <tr>
       <td Style="vertical-align:middle; height: auto;">{{ entry.create_time }}</td>
       <td Style="vertical-align:middle; height: auto;">{{ entry.print_id }}</td>
-      <td Style="vertical-align:middle; height: auto;">{{ entry.stu_id }}</td>
 
       {% if session.logged_in %}
-
+      <td Style="vertical-align:middle; height: auto;">{{ entry.stu_id }}</td>
       <td Style="vertical-align:middle; height: auto;">{{ entry.name }}</td>
       <td Style="vertical-align:middle; height: auto;">{{ entry.phone }}</td>
       {% endif %}
