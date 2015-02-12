@@ -375,6 +375,11 @@ def image_resize(file_name):
     gimg = cv2.imread('./static/upload_pic/'+file_name,cv2.IMREAD_GRAYSCALE)
     width , height = gimg.shape
     width_max = 500
+    height_max = 400
+    if (height > height_max):
+        width = int(width * float(height_max) / height)
+        height = height_max
+
     if (width > width_max):
         height = int(height * float(width_max) / width)
         width = width_max
