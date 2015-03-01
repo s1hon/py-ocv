@@ -28,6 +28,7 @@ import time
 import catchu
 
 # configuration
+DEMO=0
 DATABASE = './pt_tab.db'
 DEBUG = True
 SECRET_KEY = '987654321'
@@ -392,7 +393,8 @@ def image_resize(file_name):
 
 if __name__ == '__main__':
     ###### for demo ######
-    os.system('cat ./demo_tab.db > ./pt_tab.db')
+    if app.config['DEMO'] :
+        os.system('cat ./demo_tab.db > ./pt_tab.db')
     ###### for demo ######
 
     ###### for LOG ######
