@@ -10,7 +10,8 @@ from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
     SimpleProgress, Timer, AdaptiveETA, AdaptiveTransferSpeed
 
 def dirINIT(height,width,zoom):
-    q_tmp="G17\rM3 S1000\rG0 X0 Y0\r"
+    q_tmp="G17\rM3 S1000\r$H\r"
+    q_tmp="G0 X0 Y0\r"
     q_tmp += "G0 Z2" + "\r"
     q_tmp += "G1 X" + str(-(height-1)/zoom) +" Y0" + "\r"
     q_tmp += "G1 Y" + str(-(width-1)/zoom) + "\r"
@@ -27,7 +28,7 @@ def direction0(q,gimg,level,intr,zoom):
 
     for x in range(0,height,intr):
         if x%2==0:
-            for y in range(width):
+            for y in range(0,width,3):
                 if gimg[x][y]<=color: # black
                     if (gimg[x][y-3]>color or y==0): # white || y=0
                         q_tmp += "G0 X" + str(-x/zoom) + " Y" + str(-y/zoom) + "\r"
@@ -60,7 +61,7 @@ def direction1(q,gimg,level,intr,zoom):
 
     for y in range(0,width,intr):
         if y%2==0:
-            for x in range(height):
+            for x in range(0,height,3):
                 if gimg[x][y]<=color: # black
                     if (gimg[x-3][y]>color or x==0): # white || y=0
                         q_tmp += "G0 X" + str(-x/zoom) + " Y" + str(-y/zoom) + "\r"
