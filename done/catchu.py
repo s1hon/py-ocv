@@ -174,7 +174,7 @@ def GetLevel(level):
 def Gcode_Creater(print_id):
     ###### Setting ######
     
-    zoom=80.0
+    zoom=20.0
     intr0=5
     intr1=3
 
@@ -219,6 +219,7 @@ def Gcode_Creater(print_id):
     f.write(q1_r)
     f.write(q2_r)
     f.write(q3_r)
+    f.write("G0 X0 Y0")
     f.close()
 
     pbar += 90
