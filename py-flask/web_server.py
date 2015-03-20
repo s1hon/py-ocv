@@ -35,7 +35,7 @@ SECRET_KEY = '987654321'
 USERNAME = 'admin'
 PASSWORD = '123456'
 SU_CON = None
-HOSTWEB = 'http://120.117.73.74'
+HOSTWEB = 'http://192.168.1.18'
 UPLOAD_FOLDER = './static/upload_pic/'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
@@ -239,7 +239,7 @@ def manage_entry():
                 sendgd = Process(target=sendgcode, args=(search_pid[0],val,))
                 sendgd.start()
 
-                return redirect(app.config['HOSTWEB']+':8080')
+                return redirect('http://seans.cubie:8080')
 
             else:
                 flash('尚有列印工作進行中。','alert-danger')
