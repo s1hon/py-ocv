@@ -175,8 +175,8 @@ def Gcode_Creater(print_id):
     ###### Setting ######
     
     zoom=20.0
-    intr0=5
-    intr1=3
+    intr0=2
+    intr1=0.5
 
     ###### Setting ######
 

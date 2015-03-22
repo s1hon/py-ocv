@@ -261,7 +261,7 @@ def GetLevel(level):
 
 if __name__ == '__main__':
 	#pic to gray
-	g = cv2.imread('p3.jpg',cv2.IMREAD_GRAYSCALE)
+	g = cv2.imread('picture.jpg',cv2.IMREAD_GRAYSCALE)
 	gimg=cv2.flip(g,0)
 	q0x,q0 = Pipe()
 	q1x,q1 = Pipe()
