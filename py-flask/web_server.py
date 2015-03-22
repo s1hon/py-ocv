@@ -73,7 +73,7 @@ def teardown_request(exception):
 # 首頁
 @app.route('/')
 def show_index():
-    title="歡迎來到 CatchU"
+    title="Welcome"
     # recoding user ip
     # app.logger.warn('[Hello] Welcome user '+request.remote_addr)
     return render_template('index.html',title=title,printnow=get_print_now_id())

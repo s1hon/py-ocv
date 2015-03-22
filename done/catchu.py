@@ -10,8 +10,8 @@ from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
     SimpleProgress, Timer, AdaptiveETA, AdaptiveTransferSpeed
 
 def dirINIT(height,width,zoom):
-    q_tmp="G17\rM3 S1000\r$H\r"
-    q_tmp="G0 X0 Y0\r"
+    q_tmp = "G17\rM3 S1000\r$H\r"
+    q_tmp +="G0 X0 Y0\r"
     q_tmp += "G0 Z2" + "\r"
     q_tmp += "G1 X" + str(-(height-1)/zoom) +" Y0" + "\r"
     q_tmp += "G1 Y" + str(-(width-1)/zoom) + "\r"
@@ -174,9 +174,9 @@ def GetLevel(level):
 def Gcode_Creater(print_id):
     ###### Setting ######
     
-    zoom=20.0
-    intr0=2
-    intr1=0.5
+    zoom=40.0
+    intr0=3
+    intr1=1
 
     ###### Setting ######
 
