@@ -192,10 +192,10 @@ def Gcode_Creater(print_id):
     q2x,q2 = Pipe()
     q3x,q3 = Pipe()
     
-    p0 = Process(target=direction0,args=(q0,gimg,2,intr0,zoom,z_level,))
-    p1 = Process(target=direction1,args=(q1,gimg,4,intr0,zoom,z_level,))
-    p2 = Process(target=direction0,args=(q2,gimg,6,intr1,zoom,z_level,))
-    p3 = Process(target=direction1,args=(q3,gimg,6,intr1,zoom,z_level,))
+    p0 = Process(target=direction1,args=(q0,gimg,2,intr0,zoom,z_level,))
+    p1 = Process(target=direction0,args=(q1,gimg,4,intr0,zoom,z_level,))
+    p2 = Process(target=direction1,args=(q2,gimg,6,intr1,zoom,z_level,))
+    p3 = Process(target=direction0,args=(q3,gimg,6,intr1,zoom,z_level,))
 
     init_r = dirINIT(height,width,zoom)
     p0.start()
