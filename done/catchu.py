@@ -181,7 +181,8 @@ def Gcode_Creater(print_id):
     ###### Setting ######
 
     pbar = ProgressBar(widgets=[Percentage(), Bar()], maxval=100).start()
-    gimg = cv2.imread('./static/upload_pic/'+print_id +'.jpg',cv2.IMREAD_GRAYSCALE)
+    g = cv2.imread('./static/upload_pic/'+print_id +'.jpg',cv2.IMREAD_GRAYSCALE)
+    gimg = cv2.filp(g,0)	
     height, width = gimg.shape
  
     # parent_conn, child_conn = Pipe()
