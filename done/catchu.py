@@ -9,19 +9,19 @@ from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
     ProgressBar, ReverseBar, RotatingMarker, \
     SimpleProgress, Timer, AdaptiveETA, AdaptiveTransferSpeed
 
-def dirINIT(height,width,zoom,z_level):
+def dirINIT(height,width,zoom,z_level_down):
     q_tmp = "G17\rM3 S1000\r$H\r"
     q_tmp +="G0 X0 Y0\r"
-    q_tmp += "G0 Z"+ z_level + "\r"
+    q_tmp += "G0 Z"+ z_level_down + "\r"
     q_tmp += "G1 F800 X" + str(-(height-1)/zoom) +" Y0" + "\r"
     q_tmp += "G1 F800 Y" + str(-(width-1)/zoom) + "\r"
     q_tmp += "G1 F800 X0 " + "\r"
     q_tmp += "G1 F800 Y0" + "\r"
-    q_tmp += "G0 Z0" + "\r"
+    q_tmp += "G0 Z"+ z_level_up + "\r"
     return q_tmp
 
 
-def direction0(q,gimg,level,intr,zoom,z_level):
+def direction0(q,gimg,level,intr,zoom,z_level_down):
     color = GetLevel(level)
     height, width = gimg.shape
     q_tmp=''
@@ -32,29 +32,29 @@ def direction0(q,gimg,level,intr,zoom,z_level):
                 if gimg[x][y]<=color: # black
                     if (gimg[x][y-1]>color or y==0): # white || y=0
                         q_tmp += "G0 X" + str(-x/zoom) + " Y" + str(-y/zoom) + "\r"
-                        q_tmp += "G0 Z"+ z_level + "\r"                                         	#pen down
+                        q_tmp += "G0 Z"+ z_level_down + "\r"                                         	#pen down
                     elif y==(width-1): # if y has gone end.
                         q_tmp += "G1 F800 X" + str(-x/zoom) + " Y" + str(-y/zoom) + "\r"     	#draw
-                        q_tmp += "G0 Z0" + "\r"                                         	#pen up
+                        q_tmp += "G0 Z"+ z_level_up + "\r"                                         	#pen up
                 elif (gimg[x][y-1]<=color and y>0): # black && y > 0
                     q_tmp += "G1 F800 X" + str(-x/zoom) + " Y" + str(-(y-1)/zoom) + "\r"         	#draw
-                    q_tmp += "G0 Z0" + "\r"                                                 	#pen up
+                    q_tmp += "G0 Z"+ z_level_up + "\r"                                                 	#pen up
         else:
             for y in range((width-1),-1,-1):
                 if gimg[x][y]<=color: # black
                     if (gimg[x][y-1]>color or y==0): # white || y=0
                         q_tmp += "G1 F800 X" + str(-x/zoom) + " Y" + str(-y/zoom) + "\r" 		#draw
-                        q_tmp += "G0 Z0" + "\r"                                     		#pen up
+                        q_tmp += "G0 Z"+ z_level_up + "\r"                                     		#pen up
                     elif y==(width-1):
                         q_tmp += "G0 X" + str(-x/zoom) + " Y" + str(-(y-1)/zoom) + "\r"
-                        q_tmp += "G0 Z"+ z_level + "\r"                                     		#pen down
+                        q_tmp += "G0 Z"+ z_level_down + "\r"                                     		#pen down
                 elif (gimg[x][y-1]<=color and y>0): # black && y > 0
                     q_tmp += "G0 X" + str(-x/zoom) + " Y" + str(-(y-1)/zoom) + "\r"
-                    q_tmp += "G0 Z"+ z_level + "\r"                                             	#pen down
+                    q_tmp += "G0 Z"+ z_level_down + "\r"                                             	#pen down
     q.send(q_tmp)
     q.close
 
-def direction1(q,gimg,level,intr,zoom,z_level):
+def direction1(q,gimg,level,intr,zoom,z_level_down):
     color = GetLevel(level)
     height, width = gimg.shape
     q_tmp=''
@@ -65,29 +65,29 @@ def direction1(q,gimg,level,intr,zoom,z_level):
                 if gimg[x][y]<=color: # black
                     if (gimg[x-1][y]>color or x==0): # white || y=0
                         q_tmp += "G0 X" + str(-x/zoom) + " Y" + str(-y/zoom) + "\r"
-                        q_tmp += "G0 Z"+ z_level + "\r"                                         	#pen down
+                        q_tmp += "G0 Z"+ z_level_down + "\r"                                         	#pen down
                     elif x==(height-1): # if y has gone end.
                         q_tmp += "G1 F800 X" + str(-x/zoom) + " Y" + str(-y/zoom) + "\r"     	#draw
-                        q_tmp += "G0 Z0" + "\r"                                         	#pen up
+                        q_tmp += "G0 Z"+ z_level_up + "\r"                                         	#pen up
                 elif (gimg[x-1][y]<=color and x>0): # black && y > 0
                     q_tmp += "G1 F800 X" + str(-(x-1)/zoom) + " Y" + str(-y/zoom) + "\r"         	#draw
-                    q_tmp += "G0 Z0" + "\r"                                                 	#pen up
+                    q_tmp += "G0 Z"+ z_level_up + "\r"                                                 	#pen up
         else:
             for x in range((height-1),-1,-1):
                 if gimg[x][y]<=color: # black
                     if (gimg[x-1][y]>color or x==0): # white || y=0
                         q_tmp += "G1 F800 X" + str(-x/zoom) + " Y" + str(-y/zoom) + "\r"     	#draw
-                        q_tmp += "G0 Z0" + "\r"                                         	#pen up
+                        q_tmp += "G0 Z"+ z_level_up + "\r"                                         	#pen up
                     elif x==(height-1): # if y has gone end.
                         q_tmp += "G0 X" + str(-x/zoom) + " Y" + str(-y/zoom) + "\r"
-                        q_tmp += "G0 Z"+ z_level + "\r"                                         	#pen down
+                        q_tmp += "G0 Z"+ z_level_down + "\r"                                         	#pen down
                 elif (gimg[x-1][y]<=color and x>0): # black && y > 0
                     q_tmp += "G0 X" + str(-(x-1)/zoom) + " Y" + str(-y/zoom) + "\r"
-                    q_tmp += "G0 Z"+ z_level + "\r"                                                 	#pen down
+                    q_tmp += "G0 Z"+ z_level_down + "\r"                                                 	#pen down
     q.send(q_tmp)
     q.close
 
-def direction2(q,gimg,level,intr,zoom,z_level):
+def direction2(q,gimg,level,intr,zoom,z_level_down):
     color = GetLevel(level)
     height, width = gimg.shape
     q_tmp=''
@@ -106,14 +106,14 @@ def direction2(q,gimg,level,intr,zoom,z_level):
                 if (tx+intr<=height and ty+intr<=width) :
                     if (gimg[tx+intr][ty+intr]<=color or ty==0): # white || y=0
                         q_tmp += "G1 F800 X" + str(-tx/zoom) + " Y" + str(-ty/zoom) + "\r"
-                        q_tmp += "G0 Z"+ z_level + "\r"
+                        q_tmp += "G0 Z"+ z_level_down + "\r"
                     elif ty==width: # if y has gone end.
                         q_tmp += "G0 X" + str(-tx/zoom) + " Y" + str(-ty/zoom) + "\r"
-                        q_tmp += "G0 Z0" + "\r"
+                        q_tmp += "G0 Z"+ z_level_up + "\r"
             elif (tx+intr<height and ty+intr<width) :
                 if (gimg[tx+intr][ty+intr]<=color and ty>0): # black && y > 0
                     q_tmp += "G0 X" + str(-tx/zoom) + " Y" + str(-(ty-1)/zoom) + "\r"
-                    q_tmp += "G0 Z0" + "\r"
+                    q_tmp += "G0 Z"+ z_level_up + "\r"
             tx+=intr
             ty+=intr
 
@@ -121,7 +121,7 @@ def direction2(q,gimg,level,intr,zoom,z_level):
     q.close
 
 
-def direction3(q,gimg,level,intr,zoom,z_level):
+def direction3(q,gimg,level,intr,zoom,z_level_down):
     color = GetLevel(level)
     height, width = gimg.shape
     q_tmp=''
@@ -140,14 +140,14 @@ def direction3(q,gimg,level,intr,zoom,z_level):
                 if (tx+intr<=height and ty-intr>=0) :
                     if (gimg[tx+intr][ty-intr]<=color):
                         q_tmp += "G1 F800 X" + str(-tx/zoom) + " Y" + str(-ty/zoom) + "\r"
-                        q_tmp += "G0 Z"+ z_level + "\r"
+                        q_tmp += "G0 Z"+ z_level_down + "\r"
                     else:
                         q_tmp += "G0 X" + str(-tx/zoom) + " Y" + str(-ty/zoom) + "\r"
-                        q_tmp += "G0 Z0" + "\r"
+                        q_tmp += "G0 Z"+ z_level_up + "\r"
             elif (tx+intr<=height and ty-intr>=0):
                 if (gimg[tx+intr][ty-intr]<=color and tx>0 ):
                     q_tmp += "G0 X" + str(-tx/zoom) + " Y" + str(-ty/zoom) + "\r"
-                    q_tmp += "G0 Z0" + "\r"
+                    q_tmp += "G0 Z"+ z_level_up + "\r"
             tx-=intr
             ty+=intr
     q.send(q_tmp)
@@ -177,7 +177,8 @@ def Gcode_Creater(print_id):
     zoom=40.0
     intr0=3
     intr1=1
-    z_level=2
+    z_level_down= "5"
+    z_level_up = "4"
 
     ###### Setting ######
 
@@ -192,12 +193,12 @@ def Gcode_Creater(print_id):
     q2x,q2 = Pipe()
     q3x,q3 = Pipe()
     
-    p0 = Process(target=direction0,args=(q0,gimg,1,intr0,zoom,z_level,))
-    p1 = Process(target=direction1,args=(q1,gimg,2,intr0,zoom,z_level,))
-    p2 = Process(target=direction0,args=(q2,gimg,3,intr1,zoom,z_level,))
-    p3 = Process(target=direction1,args=(q3,gimg,5,intr1,zoom,z_level,))
+    p0 = Process(target=direction0,args=(q0,gimg,1,intr0,zoom,z_level_down,))
+    p1 = Process(target=direction1,args=(q1,gimg,2,intr0,zoom,z_level_down,))
+    p2 = Process(target=direction0,args=(q2,gimg,3,intr1,zoom,z_level_down,))
+    p3 = Process(target=direction1,args=(q3,gimg,5,intr1,zoom,z_level_down,))
 
-    init_r = dirINIT(height,width,zoom)
+    init_r = dirINIT(height,width,zoom,z_level_down,)
     p0.start()
     p1.start()
     p2.start()
@@ -221,7 +222,7 @@ def Gcode_Creater(print_id):
     f.write(q1_r)
     f.write(q2_r)
     f.write(q3_r)
-    f.write("G0 X0 Y0")
+    f.write("G0 Z0\rG0 X0 Y0\r")
     f.close()
 
     pbar += 90

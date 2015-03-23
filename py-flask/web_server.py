@@ -366,7 +366,7 @@ def compilegcode(print_id):
 
 ### Sending Gcode Module ###
 def sendgcode(print_id,val):
-    time.sleep(0.5)
+    time.sleep(2)
     url = app.config['HOSTWEB']+':8080/api/uploadGcode'
     payload = {'val': val}
     headers = {'content-type': 'application/json'}
