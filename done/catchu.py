@@ -9,7 +9,7 @@ from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
     ProgressBar, ReverseBar, RotatingMarker, \
     SimpleProgress, Timer, AdaptiveETA, AdaptiveTransferSpeed
 
-def dirINIT(height,width,zoom,z_level_down):
+def dirINIT(height,width,zoom,z_level_down,z_level_up):
     q_tmp = "G17\rM3 S1000\r$H\r"
     q_tmp +="G0 X0 Y0\r"
     q_tmp += "G0 Z"+ z_level_down + "\r"
@@ -21,7 +21,7 @@ def dirINIT(height,width,zoom,z_level_down):
     return q_tmp
 
 
-def direction0(q,gimg,level,intr,zoom,z_level_down):
+def direction0(q,gimg,level,intr,zoom,z_level_down,z_level_up):
     color = GetLevel(level)
     height, width = gimg.shape
     q_tmp=''
@@ -54,7 +54,7 @@ def direction0(q,gimg,level,intr,zoom,z_level_down):
     q.send(q_tmp)
     q.close
 
-def direction1(q,gimg,level,intr,zoom,z_level_down):
+def direction1(q,gimg,level,intr,zoom,z_level_down,z_level_up):
     color = GetLevel(level)
     height, width = gimg.shape
     q_tmp=''
@@ -87,7 +87,7 @@ def direction1(q,gimg,level,intr,zoom,z_level_down):
     q.send(q_tmp)
     q.close
 
-def direction2(q,gimg,level,intr,zoom,z_level_down):
+def direction2(q,gimg,level,intr,zoom,z_level_down,z_level_up):
     color = GetLevel(level)
     height, width = gimg.shape
     q_tmp=''
@@ -121,7 +121,7 @@ def direction2(q,gimg,level,intr,zoom,z_level_down):
     q.close
 
 
-def direction3(q,gimg,level,intr,zoom,z_level_down):
+def direction3(q,gimg,level,intr,zoom,z_level_down,z_level_up):
     color = GetLevel(level)
     height, width = gimg.shape
     q_tmp=''
@@ -193,19 +193,12 @@ def Gcode_Creater(print_id):
     q2x,q2 = Pipe()
     q3x,q3 = Pipe()
     
-<<<<<<< HEAD
-    p0 = Process(target=direction0,args=(q0,gimg,1,intr0,zoom,z_level_down,))
-    p1 = Process(target=direction1,args=(q1,gimg,2,intr0,zoom,z_level_down,))
-    p2 = Process(target=direction0,args=(q2,gimg,3,intr1,zoom,z_level_down,))
-    p3 = Process(target=direction1,args=(q3,gimg,5,intr1,zoom,z_level_down,))
-=======
-    p0 = Process(target=direction1,args=(q0,gimg,2,intr0,zoom,z_level,))
-    p1 = Process(target=direction0,args=(q1,gimg,4,intr0,zoom,z_level,))
-    p2 = Process(target=direction1,args=(q2,gimg,6,intr1,zoom,z_level,))
-    p3 = Process(target=direction0,args=(q3,gimg,6,intr1,zoom,z_level,))
->>>>>>> 318cf5f650a8f81a6c7cb4257d809f3255be6af5
+    p0 = Process(target=direction0,args=(q0,gimg,1,intr0,zoom,z_level_down,z_level_up,))
+    p1 = Process(target=direction1,args=(q1,gimg,2,intr0,zoom,z_level_down,z_level_up,))
+    p2 = Process(target=direction0,args=(q2,gimg,3,intr1,zoom,z_level_down,z_level_up,))
+    p3 = Process(target=direction1,args=(q3,gimg,5,intr1,zoom,z_level_down,z_level_up,))
 
-    init_r = dirINIT(height,width,zoom,z_level_down,)
+    init_r = dirINIT(height,width,zoom,z_level_down,z_level_up,)
     p0.start()
     p1.start()
     p2.start()
