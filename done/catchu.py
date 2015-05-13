@@ -176,11 +176,11 @@ def GetLevel(level):
 def Gcode_Creater(print_id):
     ###### Setting ######
     
-    zoom=40.0
+    zoom=3.0
     intr0=3
     intr1=1
     z_level_down= "5"
-    z_level_up = "4"
+    z_level_up = "0"
     speed="5000"
     ###### Setting ######
 

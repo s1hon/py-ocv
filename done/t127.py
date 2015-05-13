@@ -171,7 +171,7 @@ def GetLevel(level):
 
 if __name__ == '__main__':
 #set up
-	zoom=3
+	zoom=3.0
 	intr0=3
 	intr1=1
 	z_level_down="5"
@@ -182,31 +182,31 @@ if __name__ == '__main__':
 	height, width = gimg.shape
 	
 	q0x,q0 = Pipe()
-#	q1x,q1 = Pipe()
-#	q2x,q2 = Pipe()
-#	q3x,q3 = Pipe()
+	q1x,q1 = Pipe()
+	q2x,q2 = Pipe()
+	q3x,q3 = Pipe()
 	
-	p0 = Process(target=direction1,args=(q0,gimg,1,intr0,zoom,z_level_down,z_level_up,speed,))
-#	p1 = Process(target=direction1,args=(q1,gimg,3,intr0,zoom,z_level_down,z_level_up,speed,))
-#	p2 = Process(target=direction0,args=(q2,gimg,5,intr1,zoom,z_level_down,z_level_up,speed,))
-#	p3 = Process(target=direction1,args=(q3,gimg,6,intr1,zoom,z_level_down,z_level_up,speed,))
+	p0 = Process(target=direction0,args=(q0,gimg,1,intr0,zoom,z_level_down,z_level_up,speed,))
+	p1 = Process(target=direction1,args=(q1,gimg,3,intr0,zoom,z_level_down,z_level_up,speed,))
+	p2 = Process(target=direction2,args=(q2,gimg,5,intr0,zoom,z_level_down,z_level_up,speed,))
+	p3 = Process(target=direction3,args=(q3,gimg,6,intr0,zoom,z_level_down,z_level_up,speed,))
 
 	init_r = dirINIT(height,width,zoom,z_level_down,z_level_up,speed,)	
 	p0.start()
-#	p1.start()
-#	p2.start()
-#	p3.start()
+	p1.start()
+	p2.start()
+	p3.start()
 
 	q0_r = q0x.recv()
-#	q1_r = q1x.recv()
-#	q2_r = q2x.recv()
-#	q3_r = q3x.recv()
+	q1_r = q1x.recv()
+	q2_r = q2x.recv()
+	q3_r = q3x.recv()
 	print("End of Get the Pipe....")
 
 	p0.join()
-#	p1.join()
-#	p2.join()
-#	p3.join()
+	p1.join()
+	p2.join()
+	p3.join()
 
 	print("Enter the G-code.....")
 	filename='t127'
@@ -214,9 +214,9 @@ if __name__ == '__main__':
 	f = open(file_id,'w')
 	f.write(init_r)
 	f.write(q0_r)
-#	f.write(q1_r)
-#	f.write(q2_r)
-#	f.write(q3_r)
+	f.write(q1_r)
+	f.write(q2_r)
+	f.write(q3_r)
 	f.write("G0 Z0\rG0 X0 Y0\r")
 	f.close()
 
