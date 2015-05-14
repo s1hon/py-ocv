@@ -188,42 +188,57 @@ def Gcode_Creater(print_id):
     g = cv2.imread('./static/upload_pic/'+print_id +'.jpg',cv2.IMREAD_GRAYSCALE)
     gimg = cv2.flip(g,0)	
     height, width = gimg.shape
- 
+    
+    gimg_tmp=0
+    w_tmp=0
+    for x in range(0,height,1):
+        for y in range(0,width,1):
+            if (gimg[x][y]<=223):
+                gimg_tmp += gimg[x][y]
+            else:
+                w_tmp+=1
+    gimg_av=gimg_tmp//((height*width)-w_tmp)
+
     # parent_conn, child_conn = Pipe()
     q0x,q0 = Pipe()
     q1x,q1 = Pipe()
     q2x,q2 = Pipe()
     q3x,q3 = Pipe()
     
-    p0 = Process(target=direction0,args=(q0,gimg,1,intr0,zoom,z_level_down,z_level_up,speed,))
-    p1 = Process(target=direction1,args=(q1,gimg,2,intr0,zoom,z_level_down,z_level_up,speed,))
-    p2 = Process(target=direction2,args=(q2,gimg,3,intr0,zoom,z_level_down,z_level_up,speed,))
-    p3 = Process(target=direction3,args=(q3,gimg,5,intr0,zoom,z_level_down,z_level_up,speed,))
+    if gimg_av <=159  :
+        color_index=[1,3,5]
+    else :
+        color_index=[3,5,6]
+
+    p0 = Process(target=direction0,args=(q0,gimg,color_index[0],intr0,zoom,z_level_down,z_level_up,speed,))
+    p1 = Process(target=direction1,args=(q1,gimg,color_index[1],intr0,zoom,z_level_down,z_level_up,speed,))
+    p2 = Process(target=direction0,args=(q2,gimg,color_index[2],intr1,zoom,z_level_down,z_level_up,speed,))
+#    p3 = Process(target=direction1,args=(q3,gimg,5,intr1,zoom,z_level_down,z_level_up,speed,))
 
     init_r = dirINIT(height,width,zoom,z_level_down,z_level_up,speed,)
     p0.start()
     p1.start()
     p2.start()
-    p3.start()
+#    p3.start()
 
     pbar += 10
 
     q0_r = q0x.recv()
     q1_r = q1x.recv()
     q2_r = q2x.recv()
-    q3_r = q3x.recv()
+#    q3_r = q3x.recv()
 
     p0.join()
     p1.join()
     p2.join()
-    p3.join()
+#    p3.join()
 
     f = open('./static/gcodes/'+str(print_id) + '.nc','w')
     f.write(init_r)
     f.write(q0_r)
     f.write(q1_r)
     f.write(q2_r)
-    f.write(q3_r)
+#    f.write(q3_r)
     f.write("G0 Z0\rG0 X0 Y0\r")
     f.close()
 
