@@ -197,7 +197,7 @@ if __name__ == '__main__':
 	q2x,q2 = Pipe()
 	q3x,q3 = Pipe()
 	
-	if gimg_av <=159  :
+	if gimg_av >=100  :
 		color_index=[1,3,5]
 	else :
 		color_index=[3,5,6]

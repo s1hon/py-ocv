@@ -35,9 +35,10 @@ SECRET_KEY = '987654321'
 USERNAME = 'admin'
 PASSWORD = '123456'
 SU_CON = None
-HOSTWEB = 'http://192.168.1.18'
+#HOSTWEB = 'http://192.168.1.18'
+HOSTWEB = 'http://120.117.72.131'
 UPLOAD_FOLDER = './static/upload_pic/'
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif', 'JPG', 'JPEG', 'PNG'])
 
 
 app = Flask(__name__)

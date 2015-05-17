@@ -11,6 +11,7 @@ from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
 
 def dirINIT(height,width,zoom,z_level_down,z_level_up,speed):
     q_tmp = "G17\rM3 S1000\r$H\r"
+    q_tmp +="G0 Z0\r"
     q_tmp +="G0 X0 Y0\r"
     q_tmp += "G0 Z"+ z_level_down + "\r"
     q_tmp += "G1 F"+ speed +" X" + str(-height/zoom) +" Y0" + "\r"
@@ -179,9 +180,9 @@ def Gcode_Creater(print_id):
     zoom=3
     intr0=3
     intr1=1
-    z_level_down= "5"
-    z_level_up = "0"
-    speed="5000"
+    z_level_down= "4"
+    z_level_up = "1"
+    speed="7000"
     ###### Setting ######
 
     pbar = ProgressBar(widgets=[Percentage(), Bar()], maxval=100).start()
@@ -205,7 +206,7 @@ def Gcode_Creater(print_id):
     q2x,q2 = Pipe()
     q3x,q3 = Pipe()
     
-    if gimg_av <=159  :
+    if gimg_av >130  :
         color_index=[1,3,5]
     else :
         color_index=[3,5,6]
