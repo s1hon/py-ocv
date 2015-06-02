@@ -22,6 +22,7 @@ def dirGCODE(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 	q_tmp=''
 	for line_x in range(0,line):
                	# len() = list size
+#		print len(list_total[line_x])
                	for line_y in range (0, len(list_total[line_x])):
                        	if (line_y%2==0):
                                	q_tmp += "G0 X" + str(-list_total[line_x][line_y][0]/zoom) + " Y" + str(-list_total[line_x][line_y][1]/zoom) + "\n"
@@ -30,7 +31,7 @@ def dirGCODE(q,list_total,line,zoom,z_level_down,z_level_up,speed):
                                	q_tmp += "G1 F" + speed + " X" + str(-list_total[line_x][line_y][0]/zoom) + " Y" + str(-list_total[line_x][line_y][1]/zoom) + "\n"
                                	q_tmp += "G0 Z"+ z_level_up + "\n"
 
-#       print list_total[line_x][line_y]
+#      		print list_total[line_x]
 	q.send(q_tmp)
 	q.close()
 #	return q_tmp
@@ -89,7 +90,7 @@ def direction1(gimg,level,intr):
                         if (gimg[x][y]<=color):
                                 if (gimg[x-1][y]>color or x==0):
                                         list_total[line].append([x,y])
-                                elif (y==(width//zoom)*3):
+                                elif (x==(height//zoom)*3):
                                         list_total[line].append([x,y])
                         elif (gimg[x-1][y]<=color and x>0):
                                 list_total[line].append([x,y])
@@ -132,26 +133,31 @@ if __name__ == '__main__':
 	q2x,q2 = Pipe()
 	q3x,q3 = Pipe()
 	
-#	list_p0 = direction0(gimg,1,intr0,)
-	list_p1 = direction1(gimg,1,intr0,)
+	list_p0 = direction0(gimg,1,intr0,)
+	list_p1 = direction1(gimg,3,intr0,)
 #	print list_p0[0]
 #	print list_p0[1]
-	p0 = Process(target=dirGCODE,args=(q0,list_p1[0],list_p1[1],zoom,z_level_down,z_level_up,speed,))
+
+	p0 = Process(target=dirGCODE,args=(q0,list_p0[0],list_p0[1],zoom,z_level_down,z_level_up,speed,))
+	p1 = Process(target=dirGCODE,args=(q1,list_p1[0],list_p1[1],zoom,z_level_down,z_level_up,speed,))
 #	p0 = dirGCODE(list_p0[0],list_p0[1],zoom,z_level_down,z_level_up,speed,)
 	init_r = dirINIT(height,width,zoom,z_level_down,z_level_up,speed,)	
 	p0.start()
+	p1.start()
 	q0_r = q0x.recv()
+	q1_r = q1x.recv()
 #	print q0_r
 	print("End of Get the Pipe....")
 
 	p0.join()
-
+	p1.join()
 	print("Enter the G-code.....")
 	filename='revise'
 	file_id = str(filename) + '.nc'
 	f = open(file_id,'w')
 	f.write(init_r)
 	f.write(q0_r)
+	f.write(q1_r)
 	f.write("G0 Z0\rG0 X0 Y0\r")
 	f.close()
 
