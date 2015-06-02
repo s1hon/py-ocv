@@ -133,24 +133,48 @@ if __name__ == '__main__':
 	q2x,q2 = Pipe()
 	q3x,q3 = Pipe()
 	
-	list_p0 = direction0(gimg,1,intr0,)
-	list_p1 = direction1(gimg,3,intr0,)
+	color_tmp=0
+        white_tmp=0
+	#count pixel color
+        for x in range(0,height,1):
+                for y in range(0,width,1):
+                        if (gimg[x][y]<=223):
+                                color_tmp += gimg[x][y]
+                        else:
+                                white_tmp+=1
+	#count pixel average
+	color_av = color_tmp//((height*width)-white_tmp)
+	#decide color level
+	if color_av >= 100:
+		color_level = [1,3,5]
+	else:
+		color_level = [3,5,6]
+
+	list_p0 = direction0(gimg,color_level[0],intr0,)
+	list_p1 = direction1(gimg,color_level[1],intr0,)
+	list_p2 = direction0(gimg,color_level[2],intr1,)
 #	print list_p0[0]
 #	print list_p0[1]
 
 	p0 = Process(target=dirGCODE,args=(q0,list_p0[0],list_p0[1],zoom,z_level_down,z_level_up,speed,))
 	p1 = Process(target=dirGCODE,args=(q1,list_p1[0],list_p1[1],zoom,z_level_down,z_level_up,speed,))
+	p2 = Process(target=dirGCODE,args=(q2,list_p2[0],list_p2[1],zoom,z_level_down,z_level_up,speed,))
 #	p0 = dirGCODE(list_p0[0],list_p0[1],zoom,z_level_down,z_level_up,speed,)
 	init_r = dirINIT(height,width,zoom,z_level_down,z_level_up,speed,)	
 	p0.start()
 	p1.start()
+	p2.start()
+
 	q0_r = q0x.recv()
 	q1_r = q1x.recv()
+	q2_r = q2x.recv()	
 #	print q0_r
 	print("End of Get the Pipe....")
 
 	p0.join()
 	p1.join()
+	p2.join()
+
 	print("Enter the G-code.....")
 	filename='revise'
 	file_id = str(filename) + '.nc'
@@ -158,6 +182,7 @@ if __name__ == '__main__':
 	f.write(init_r)
 	f.write(q0_r)
 	f.write(q1_r)
+	f.write(q2_r)
 	f.write("G0 Z0\rG0 X0 Y0\r")
 	f.close()
 
