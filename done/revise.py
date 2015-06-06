@@ -58,23 +58,6 @@ def direction0(gimg,level,intr):
 			list_total[line].reverse()
 		line+=1
 
-#	print list_total
-#	print line
-
-#	for line_x in range(0,line):
-		# len() = list size
-#		for line_y in range (0, len(list_total[line_x])):
-#			if (line_y%2==0):
-#				q_tmp += "G0 X" + str(-list_total[line_x][line_y][0]/zoom) + " Y" + str(-list_total[line_x][line_y][1]/zoom) + "\n"
-#				q_tmp += "G0 Z"+ z_level_down + "\n"
-#			else:
-#				q_tmp += "G1 F" + speed + " X" + str(-list_total[line_x][line_y][0]/zoom) + " Y" + str(-list_total[line_x][line_y][1]/zoom) + "\n"
-#	                        q_tmp += "G0 Z"+ z_level_up + "\n"
-
-#			print list_total[line_x][line_y]
-#	return 	list_total
-#	q.send(list_total)
-#	q.close
 	return list_total,line
 
 def direction1(gimg,level,intr):
@@ -98,6 +81,62 @@ def direction1(gimg,level,intr):
                         list_total[line].reverse()
                 line+=1
 	return list_total,line
+
+def direction2(gimg,level,intr):
+	color = GetLevel(level)
+        height, width = gimg.shape
+        q_tmp=''
+        line=0
+        list_total=[]	
+	
+	for x in range((height//intr)*intr,0,-intr):
+		y=0
+		while (x>=0 and y<width and x<height and y>=0):
+			if (gimg[x][y]<=color):
+				if (gimg[x-intr][y-intr]>color or x==0 or y==0):
+					q_tmp += "G0 X" + str(-x/3) + " Y" + str(-y/3) + "\n"
+				elif (x==(height//intr)*intr or y==(width//intr)*intr):
+					q_tmp += "G1 X" + str(-x/3) + " Y" + str(-y/3) + "\n"	
+			elif (gimg[x-intr][y-intr]<=color and x>0 and y>0):
+				q_tmp += "G1 X" + str(-(x-intr)/3) + " Y" + str(-(y-intr)/3) + "\n"
+			y+=intr
+			x+=intr
+	
+	for y in range(0,(width//intr)*intr,intr):
+		x=0
+		while (x>=0 and y<width and x<height and y>=0):
+			if (gimg[x][y]<=color):
+                                if (gimg[x-intr][y-intr]>color or x==0 or y==0):
+                                        q_tmp += "G0 X" + str(-x/3) + " Y" + str(-y/3) + "\n"
+                                elif (x==(height//intr)*intr or y==(width//intr)*intr):
+                                        q_tmp += "G1 X" + str(-x/3) + " Y" + str(-y/3) + "\n"
+                        elif (gimg[x-intr][y-intr]<=color and x>0 and y>0):
+                                q_tmp += "G1 X" + str(-(x-intr)/3) + " Y" + str(-(y-intr)/3) + "\n"
+			x+=intr
+			y+=intr
+	return q_tmp
+	
+def direction3(gimg,level,intr):
+	color = GetLevel(level)
+        height, width = gimg.shape
+        q_tmp=''
+        line=0
+        list_total=[]
+
+	for x in range((height//intr)*intr,0,-intr):
+		y=(width//intr)*intr
+                while (x>=0 and y<width and x<height and y>=0):
+                        q_tmp += "G1 X" + str(-x/3) + " Y" + str(-y/3) + "\n"
+                        x+=intr
+                        y-=intr
+	
+	for y in range((width//intr)*intr,0,-intr):
+		x=0
+		while (x>=0 and y<width and x<height and y>=0):
+			q_tmp += "G1 X" + str(-x/3) + " Y" + str(-y/3) + "\n" 
+			x+=intr
+			y-=intr
+	return q_tmp
 
 def GetLevel(level):
 	if level == 1 :	
@@ -150,39 +189,42 @@ if __name__ == '__main__':
 	else:
 		color_level = [3,5,6]
 
-	list_p0 = direction0(gimg,color_level[0],intr0,)
-	list_p1 = direction1(gimg,color_level[1],intr0,)
-	list_p2 = direction0(gimg,color_level[2],intr1,)
+#	list_p0 = direction0(gimg,color_level[0],intr0,)
+#	list_p1 = direction1(gimg,color_level[1],intr0,)
+#	list_p2 = direction2(gimg,color_level[2],intr0,)
 #	print list_p0[0]
 #	print list_p0[1]
 
-	p0 = Process(target=dirGCODE,args=(q0,list_p0[0],list_p0[1],zoom,z_level_down,z_level_up,speed,))
-	p1 = Process(target=dirGCODE,args=(q1,list_p1[0],list_p1[1],zoom,z_level_down,z_level_up,speed,))
-	p2 = Process(target=dirGCODE,args=(q2,list_p2[0],list_p2[1],zoom,z_level_down,z_level_up,speed,))
+#	p0 = Process(target=dirGCODE,args=(q0,list_p0[0],list_p0[1],zoom,z_level_down,z_level_up,speed,))
+#	p1 = Process(target=dirGCODE,args=(q1,list_p1[0],list_p1[1],zoom,z_level_down,z_level_up,speed,))
+#	p2 = Process(target=dirGCODE,args=(q2,list_p2[0],list_p2[1],zoom,z_level_down,z_level_up,speed,))
 #	p0 = dirGCODE(list_p0[0],list_p0[1],zoom,z_level_down,z_level_up,speed,)
-	init_r = dirINIT(height,width,zoom,z_level_down,z_level_up,speed,)	
-	p0.start()
-	p1.start()
-	p2.start()
+	init_r = dirINIT(height,width,zoom,z_level_down,z_level_up,speed,)
+	list_p2 = direction3(gimg,1,intr0)
 
-	q0_r = q0x.recv()
-	q1_r = q1x.recv()
-	q2_r = q2x.recv()	
+#	p0.start()
+#	p1.start()
+#	p2.start()
+
+#	q0_r = q0x.recv()
+#	q1_r = q1x.recv()
+#	q2_r = q2x.recv()	
 #	print q0_r
 	print("End of Get the Pipe....")
 
-	p0.join()
-	p1.join()
-	p2.join()
+#	p0.join()
+#	p1.join()
+#	p2.join()
 
 	print("Enter the G-code.....")
 	filename='revise'
 	file_id = str(filename) + '.nc'
 	f = open(file_id,'w')
-	f.write(init_r)
-	f.write(q0_r)
-	f.write(q1_r)
-	f.write(q2_r)
+#	f.write(init_r)
+#	f.write(q0_r)
+#	f.write(q1_r)
+#	f.write(q2_r)
+	f.write(list_p2)
 	f.write("G0 Z0\rG0 X0 Y0\r")
 	f.close()
 
