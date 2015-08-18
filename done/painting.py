@@ -20,16 +20,37 @@ def dirINIT(height,width,zoom,z_level_down,z_level_up,speed):
 #produce G-code
 def dirGCODE(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 	q_tmp=''
-	new_list=[]
+	list_tmp=[]
+	list_clearup=[]
+#	filter repeated list
+ 
+#	c=[[1,2],[1,2],[2,3],[4,5]]
+#	b=[]
+#	for a in c:
+#		if a not in b:
+#			b.append(a)
+#	c = b
+#	print b
 	for line_x in range(0,line):
                	# len() = list size
 #		print len(list_total[line_x])		
 #		print list_total[line_x]
-		new_list.append([])
+		list_tmp.append([])
 		for line_y in range(0,len(list_total[line_x])):
 #			print list_total[line_x][line_y]			
 			if(list_total[line_x][line_y][1]==list_total[line_x][line_y-1][1]+1):
-				print list_total[line_x][line_y]
+#				print list_total[line_x][line_y-1]
+#				print list_total[line_x][line_y]
+				list_tmp[line_x].append(list_total[line_x][line_y-1])
+				list_tmp[line_x].append(list_total[line_x][line_y])
+		if (len(list_tmp[line_x])!=0):
+			for a in list_tmp[line_x]:
+				if a not in list_clearup:
+					list_clearup.append(a)
+			list_tmp[line_x] = list_clearup
+#	print list_tmp
+	print list_clearup
+
 #	for new_x in range(0,line):
 #		print new_list[new_x]
 			
