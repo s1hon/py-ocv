@@ -1,0 +1,9 @@
+8/14 
+目前問題
+間隔太小的點將忽略
+8/18
+解決
+將所有間隔太小的點存在list_clearup
+目前問題
+list_total(array)-list_clearup(array)
+list_clearup 內有的值都將不會存在於 list_total

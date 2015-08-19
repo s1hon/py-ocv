@@ -22,15 +22,23 @@ def dirGCODE(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 	q_tmp=''
 	list_tmp=[]
 	list_clearup=[]
+	list_new=[]
+ 	line_new=0
+#	2 list compare	repertes del
+#	a=[1,1,2,3,4]
+#	b=[1]
+#	c=set(a)-set(b)
+#	print list(c)
+	
 #	filter repeated list
- 
 #	c=[[1,2],[1,2],[2,3],[4,5]]
-#	b=[]
+#	b=[[1,2]]
+#	d=[]
 #	for a in c:
 #		if a not in b:
-#			b.append(a)
-#	c = b
-#	print b
+#			d.append(a)
+#	c = d
+#	print d
 	for line_x in range(0,line):
                	# len() = list size
 #		print len(list_total[line_x])		
@@ -44,12 +52,36 @@ def dirGCODE(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 				list_tmp[line_x].append(list_total[line_x][line_y-1])
 				list_tmp[line_x].append(list_total[line_x][line_y])
 		if (len(list_tmp[line_x])!=0):
-			for a in list_tmp[line_x]:
-				if a not in list_clearup:
-					list_clearup.append(a)
+			for i in list_tmp[line_x]:
+				if i not in list_clearup:
+					list_clearup.append(i)
 			list_tmp[line_x] = list_clearup
 #	print list_tmp
-	print list_clearup
+#	print list_clearup
+	
+	for line_x in range(0,line):
+		list_new.append([])
+		for total_tmp in list_total[line_x]:
+			if total_tmp not in list_clearup:
+				list_new[line_new].append(total_tmp)
+		line_new+=1
+		list_total[line_x]=list_new
+#	print list_new
+
+#	test
+
+#	for new_x in range(0,line_new):
+#		print list_new[new_x]
+	
+	for new_x in range(0,line_new):
+		for new_y in range(0,len(list_new[new_x])):
+			if (new_y%2==0):
+                                q_tmp += "G0 X" + str(-list_new[new_x][new_y][0]/zoom) + " Y" + str(-list_new[new_x][new_y][1]/zoom) + "\n"
+                                q_tmp += "G0 Z"+ z_level_down + "\n"
+                        else:
+                                q_tmp += "G1 F" + speed + " X" + str(-list_new[new_x][new_y][0]/zoom) + " Y" + str(-list_new[new_x][new_y][1]/zoom) + "\n"
+                                q_tmp += "G0 Z"+ z_level_up + "\n"
+
 
 #	for new_x in range(0,line):
 #		print new_list[new_x]
