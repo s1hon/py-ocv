@@ -52,8 +52,8 @@ def dirGCODE(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 		list_tmp.append([])
 		for line_y in range(1,len(list_total[line_x])):
 #			print list_total[line_x][line_y]		
-#			print list_total[line_x][line_y-1][1]	
-			if( (list_total[line_x][line_y][1] == list_total[line_x][line_y-1][1]+1) ):
+#			print list_total[line_x][line_y-1][1]
+			if( (list_total[line_x][line_y][1] == list_total[line_x][line_y-1][1]+1)):
 #				print list_total[line_x][line_y-1]
 #				print list_total[line_x][line_y]
 				list_tmp[line_x].append(list_total[line_x][line_y-1])
@@ -73,11 +73,30 @@ def dirGCODE(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 				list_new[line_tmp].append(total_tmp)
 		line_tmp+=1
 		list_total[line_x]=list_new
+#	print -list_new[90][0][1]/zoom
+#	print -list_new[90][1][1]/zoom
+#	print -list_new[90][2][1]/zoom
+#	print -list_new[90][3][1]/zoom
+#	print -list_new[90][4][1]/zoom
+#	print -list_new[90][5][1]/zoom
 #	-------------------
 #	check list_new data
 #	-------------------
 #	for new_x in range(0,line_new):
 #		print list_new[new_x]
+
+#       ---------------------------------------
+#       check whether the points correct or not
+#       ---------------------------------------
+	for x in range(0,line_tmp):
+		for y in range(0,len(list_new[x])):
+			if (y%2==0):
+				q_tmp += "G0 X" + str(-list_new[x][y][0]/zoom) + " Y" + str(-list_new[x][y][1]/zoom) + "\n"
+				q_tmp += "G0 Z"+ z_level_down + "\n"
+			else:
+				q_tmp += "G1 F" + speed + " X" + str(-list_new[x][y][0]/zoom) + " Y" + str(-list_new[x][y][1]/zoom) + "\n"
+				q_tmp += "G0 Z"+ z_level_up + "\n"
+
 #	-------------
 #	second filter
 #	-------------
@@ -86,6 +105,7 @@ def dirGCODE(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 	list_done=[]
 	line_done=0
 	for new_x in range(0,line_tmp):
+#		print list_new[new_x]
 		list_tmp.append([])
 		for new_y in range(1,len(list_new[new_x])):
 			if ((list_new[new_x][new_y][1]/zoom <= (list_new[new_x][new_y-1][1]/zoom)+1)):
@@ -106,12 +126,11 @@ def dirGCODE(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 		line_done+=1
 		list_new[tmp_x]=list_done
 #	print list_done
-
 #	--------------------
 #	print list_done data
 #	--------------------
-	for x in range(0,line_done):
-		print list_done[x]
+#	for x in range(0,line_done):
+#		print list_done[x]
 #	---------------------------------------
 #	check whether the points correct or not 
 #	---------------------------------------

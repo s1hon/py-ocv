@@ -211,7 +211,7 @@ if __name__ == '__main__':
 	z_level_down="4"
 	z_level_up="0"
 	speed="5000"
-	g = cv2.imread('picture.jpg',cv2.IMREAD_GRAYSCALE)
+	g = cv2.imread('p1.jpg',cv2.IMREAD_GRAYSCALE)
 	gimg=cv2.flip(g,0)
 	height, width = gimg.shape
 	
@@ -238,31 +238,31 @@ if __name__ == '__main__':
 		color_level = [3,5,6]
 
 	list_p0 = direction0(gimg,color_level[0],intr0,)
-	list_p1 = direction1(gimg,color_level[1],intr0,)
-	list_p2 = direction2(gimg,color_level[2],intr0,)
+#	list_p1 = direction1(gimg,color_level[1],intr0,)
+#	list_p2 = direction2(gimg,color_level[2],intr0,)
 #	print list_p0[0]
 #	print list_p0[1]
 
 	p0 = Process(target=dirGCODE,args=(q0,list_p0[0],list_p0[1],zoom,z_level_down,z_level_up,speed,))
-	p1 = Process(target=dirGCODE,args=(q1,list_p1[0],list_p1[1],zoom,z_level_down,z_level_up,speed,))
-	p2 = Process(target=dirGCODE,args=(q2,list_p2[0],list_p2[1],zoom,z_level_down,z_level_up,speed,))
+#	p1 = Process(target=dirGCODE,args=(q1,list_p1[0],list_p1[1],zoom,z_level_down,z_level_up,speed,))
+#	p2 = Process(target=dirGCODE,args=(q2,list_p2[0],list_p2[1],zoom,z_level_down,z_level_up,speed,))
 #	p0 = dirGCODE(list_p0[0],list_p0[1],zoom,z_level_down,z_level_up,speed,)
 	init_r = dirINIT(height,width,zoom,z_level_down,z_level_up,speed,)
 #	list_p2 = direction3(gimg,1,intr0)
 
 	p0.start()
-	p1.start()
-	p2.start()
+#	p1.start()
+#	p2.start()
 
 	q0_r = q0x.recv()
-	q1_r = q1x.recv()
-	q2_r = q2x.recv()	
+#	q1_r = q1x.recv()
+#	q2_r = q2x.recv()	
 #	print q0_r
 	print("End of Get the Pipe....")
 
 	p0.join()
-	p1.join()
-	p2.join()
+#	p1.join()
+#	p2.join()
 
 	print("Enter the G-code.....")
 	filename='revise'
@@ -270,8 +270,8 @@ if __name__ == '__main__':
 	f = open(file_id,'w')
 #	f.write(init_r)
 	f.write(q0_r)
-	f.write(q1_r)
-	f.write(q2_r)
+#	f.write(q1_r)
+#	f.write(q2_r)
 #	f.write(list_p2)
 	f.write("G0 Z0\rG0 X0 Y0\r")
 	f.close()

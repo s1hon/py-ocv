@@ -1,9 +1,31 @@
 8/14 
 目前問題
 間隔太小的點將忽略
+-----------------------------------
 8/18
 解決
 將所有間隔太小的點存在list_clearup
+-----------------------------------
 目前問題
 list_total(array)-list_clearup(array)
 list_clearup 內有的值都將不會存在於 list_total
+----------------------------------------------
+8/20
+解決
+list_clearup 內值都不存在於 list_total 並令存新的array list_new
+list_new(array)-list_clearup(array)
+list_clearup 內值都不存在於 list_inew 並令存新的array list_done
+points filter done 
+---------------------------------------------------------------
+目前問題
+如何將所有點連起來，描出圖片輪廓
+--------------------------------
+
+嘗試畫輪廓
+if ((list_total[line_x][0][0]==list_total[line_x-1][0][0]-3 and line_x>0) or line_x==0):
+	q_tmp += "G0 X" + str(-list_total[line_x][0][0]/zoom) + " Y" + str(-list_total[line_x][0][1]/zoom) + "\n"
+else :
+	q_tmp += "G1 F" + speed + " X" + str(-list_total[line_x][0][0]/zoom) + " Y" + str(-list_total[line_x][0][1]/zoom) + "\n"
+
+
+python arg
