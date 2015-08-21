@@ -53,11 +53,12 @@ def dirGCODE(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 		for line_y in range(1,len(list_total[line_x])):
 #			print list_total[line_x][line_y]		
 #			print list_total[line_x][line_y-1][1]
-			if( (list_total[line_x][line_y][1] == list_total[line_x][line_y-1][1]+1)):
+			if (line_y != len(list_total[line_x])-1):
+				if( (list_total[line_x][line_y][1] == list_total[line_x][line_y-1][1]+1) or (list_total[line_x][line_y][1] == list_total[line_x][line_y-1][1]+2)):
 #				print list_total[line_x][line_y-1]
 #				print list_total[line_x][line_y]
-				list_tmp[line_x].append(list_total[line_x][line_y-1])
-				list_tmp[line_x].append(list_total[line_x][line_y])
+					list_tmp[line_x].append(list_total[line_x][line_y-1])
+					list_tmp[line_x].append(list_total[line_x][line_y])
 		if (len(list_tmp[line_x])!=0):
 			for i in list_tmp[line_x]:
 				if i not in list_clearup:
@@ -65,7 +66,6 @@ def dirGCODE(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 			list_tmp[line_x] = list_clearup
 #	print list_tmp
 #	print list_clearup
-	
 	for line_x in range(0,line):
 		list_new.append([])
 		for total_tmp in list_total[line_x]:
@@ -73,12 +73,12 @@ def dirGCODE(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 				list_new[line_tmp].append(total_tmp)
 		line_tmp+=1
 		list_total[line_x]=list_new
-#	print -list_new[90][0][1]/zoom
-#	print -list_new[90][1][1]/zoom
-#	print -list_new[90][2][1]/zoom
-#	print -list_new[90][3][1]/zoom
-#	print -list_new[90][4][1]/zoom
-#	print -list_new[90][5][1]/zoom
+#	print list_new
+
+#	--------------------------------
+#	int() round() float()
+#	--------------------------------
+#	print int(round(float(100)/3))
 #	-------------------
 #	check list_new data
 #	-------------------
@@ -88,14 +88,14 @@ def dirGCODE(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 #       ---------------------------------------
 #       check whether the points correct or not
 #       ---------------------------------------
-	for x in range(0,line_tmp):
-		for y in range(0,len(list_new[x])):
-			if (y%2==0):
-				q_tmp += "G0 X" + str(-list_new[x][y][0]/zoom) + " Y" + str(-list_new[x][y][1]/zoom) + "\n"
-				q_tmp += "G0 Z"+ z_level_down + "\n"
-			else:
-				q_tmp += "G1 F" + speed + " X" + str(-list_new[x][y][0]/zoom) + " Y" + str(-list_new[x][y][1]/zoom) + "\n"
-				q_tmp += "G0 Z"+ z_level_up + "\n"
+#	for x in range(0,line_tmp):
+#		for y in range(0,len(list_new[x])):
+#			if (y%2==0):
+#				q_tmp += "G0 X" + str(-list_new[x][y][0]/zoom) + " Y" + str(-list_new[x][y][1]/zoom) + "\n"
+#				q_tmp += "G0 Z"+ z_level_down + "\n"
+#			else:
+#				q_tmp += "G1 F" + speed + " X" + str(-list_new[x][y][0]/zoom) + " Y" + str(-list_new[x][y][1]/zoom) + "\n"
+#				q_tmp += "G0 Z"+ z_level_up + "\n"
 
 #	-------------
 #	second filter
@@ -108,7 +108,7 @@ def dirGCODE(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 #		print list_new[new_x]
 		list_tmp.append([])
 		for new_y in range(1,len(list_new[new_x])):
-			if ((list_new[new_x][new_y][1]/zoom <= (list_new[new_x][new_y-1][1]/zoom)+1)):
+			if ( int (round (float (list_new[new_x][new_y][1])/zoom)) <= int( round (float (list_new[new_x][new_y-1][1])/zoom))+1):
 				list_tmp[new_x].append(list_new[new_x][new_y-1])
 				list_tmp[new_x].append(list_new[new_x][new_y])
 		if (len(list_tmp[new_x])!=0):
@@ -134,14 +134,14 @@ def dirGCODE(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 #	---------------------------------------
 #	check whether the points correct or not 
 #	---------------------------------------
-#	for x in range(0,line_done):
-#		for y in range(0,len(list_done[x])):
-#			if (y%2==0):
-#                                q_tmp += "G0 X" + str(-list_done[x][y][0]/zoom) + " Y" + str(-list_done[x][y][1]/zoom) + "\n"
-#                                q_tmp += "G0 Z"+ z_level_down + "\n"
-#                        else:
-#                                q_tmp += "G1 F" + speed + " X" + str(-list_done[x][y][0]/zoom) + " Y" + str(-list_done[x][y][1]/zoom) + "\n"
-#                                q_tmp += "G0 Z"+ z_level_up + "\n"
+	for x in range(0,line_done):
+		for y in range(0,len(list_done[x])):
+			if (y%2==0):
+                                q_tmp += "G0 X" + str(-list_done[x][y][0]/zoom) + " Y" + str(-list_done[x][y][1]/zoom) + "\n"
+                                q_tmp += "G0 Z"+ z_level_down + "\n"
+                        else:
+                                q_tmp += "G1 F" + speed + " X" + str(-list_done[x][y][0]/zoom) + " Y" + str(-list_done[x][y][1]/zoom) + "\n"
+                                q_tmp += "G0 Z"+ z_level_up + "\n"
 	q.send(q_tmp)
 	q.close()
 
