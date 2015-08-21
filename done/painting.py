@@ -129,19 +129,46 @@ def dirGCODE(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 #	--------------------
 #	print list_done data
 #	--------------------
-#	for x in range(0,line_done):
-#		print list_done[x]
+	for x in range(0,line_done):
+		print list_done[x]
 #	---------------------------------------
 #	check whether the points correct or not 
 #	---------------------------------------
-	for x in range(0,line_done):
-		for y in range(0,len(list_done[x])):
-			if (y%2==0):
-                                q_tmp += "G0 X" + str(-list_done[x][y][0]/zoom) + " Y" + str(-list_done[x][y][1]/zoom) + "\n"
-                                q_tmp += "G0 Z"+ z_level_down + "\n"
-                        else:
-                                q_tmp += "G1 F" + speed + " X" + str(-list_done[x][y][0]/zoom) + " Y" + str(-list_done[x][y][1]/zoom) + "\n"
-                                q_tmp += "G0 Z"+ z_level_up + "\n"
+#	for x in range(0,line_done):
+#		for y in range(0,len(list_done[x])):
+#			if (y%2==0):
+#				q_tmp += "G0 X" + str(-list_done[x][y][0]/zoom) + " Y" + str(-list_done[x][y][1]/zoom) + "\n"
+#				q_tmp += "G0 Z"+ z_level_down + "\n"
+#			else:
+#				q_tmp += "G1 F" + speed + " X" + str(-list_done[x][y][0]/zoom) + " Y" + str(-list_done[x][y][1]/zoom) + "\n"
+#				q_tmp += "G0 Z"+ z_level_up + "\n"
+
+#	---------------
+#	draw an outline
+#	---------------
+#	for x in range(line_done-1,-1,-1):
+#		for y in range (len(list_done[x])-1,-1,-1):
+#			if x==line_done-1:
+#				if (y%2!=0):
+#					q_tmp += "G0 X" + str(-list_done[x][y][0]/zoom) + " Y" + str(-list_done[x][y][1]/zoom) + "\n"
+#				else:
+#					q_tmp += "G1 F" + speed + " X" + str(-list_done[x][y][0]/zoom) + " Y" + str(-list_done[x][y][1]/zoom) + "\n"
+#
+#			if (y==0):
+#				if ((list_done[x][y][0]==list_done[x-1][y][0]-3 and x>0)):
+#					q_tmp += "G0 X" + str(-list_done[x][y][0]/zoom) + " Y" + str(-list_done[x][y][1]/zoom) + "\n"
+#				else:
+#					q_tmp += "G1 F" + speed + " X" + str(-list_done[x][y][0]/zoom) + " Y" + str(-list_done[x][y][1]/zoom) + "\n"
+#		for y2 in range(0,len(list_done[x])):
+#			if x == 0:
+#				if (y2%2==0):
+#					q_tmp += "G0 X" + str(-list_done[x][y2][0]/zoom) + " Y" + str(-list_done[x][y2][1]/zoom) + "\n"
+#					q_tmp += "G0 Z"+ z_level_down + "\n"
+#				else:
+#					q_tmp += "G1 F" + speed + " X" + str(-list_done[x][y2][0]/zoom) + " Y" + str(-list_done[x][y2][1]/zoom) + "\n"
+#					q_tmp += "G0 Z"+ z_level_up + "\n"
+	
+
 	q.send(q_tmp)
 	q.close()
 
