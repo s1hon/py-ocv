@@ -129,8 +129,8 @@ def dirGCODE(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 #	--------------------
 #	print list_done data
 #	--------------------
-	for x in range(0,line_done):
-		print list_done[x]
+#	for x in range(0,line_done):
+#		print list_done[x]
 #	---------------------------------------
 #	check whether the points correct or not 
 #	---------------------------------------
@@ -167,6 +167,25 @@ def dirGCODE(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 #				else:
 #					q_tmp += "G1 F" + speed + " X" + str(-list_done[x][y2][0]/zoom) + " Y" + str(-list_done[x][y2][1]/zoom) + "\n"
 #					q_tmp += "G0 Z"+ z_level_up + "\n"
+#	-------------------
+#	save list_done size
+#	-------------------
+	len_tmp=[]
+	for len_x in range(0,line_done):
+		len_tmp.append(len(list_done[len_x]))
+#	print len_tmp
+#	------------------------------
+#	find list_done size max or min
+#	------------------------------
+#	print max(len_tmp)
+#	print min(len_tmp)
+	len_size=min(len_tmp)
+	len_max=max(len_tmp)
+	while len_size<=len_max:
+		for x in range(0,line_done):
+			if len(list_done[x])==len_size:
+				print list_done[x]
+		len_size+=2
 	
 
 	q.send(q_tmp)
