@@ -183,19 +183,22 @@ def dirGCODE(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 	len_max=max(len_tmp)
 	a=None
 	while len_size<=len_max:
-		for x in range(0,line_done):
-			if len(list_done[x])==len_size:
-#				print list_done[x]
-				if a == None:
-					a=list_done[x][len_size-1][0]
-					q_tmp += "G0 X" + str(-list_done[x][len_size-1][0]/zoom) + " Y" + str(-list_done[x][len_size-1][1]/zoom) + "\n"
-				elif a==list_done[x][len_size-1][0]-3:
-#					print list_done[x][len_size-1][0]
-					a=list_done[x][len_size-1][0]
-					q_tmp += "G1 F" + speed + " X" + str(-list_done[x][len_size-1][0]/zoom) + " Y" + str(-list_done[x][len_size-1][1]/zoom) + "\n"
-				else:
-					a=list_done[x][len_size-1][0]
-					q_tmp += "G0 X" + str(-list_done[x][len_size-1][0]/zoom) + " Y" + str(-list_done[x][len_size-1][1]/zoom) + "\n"
+		y=len_size-1
+		while y>=0:
+			for x in range(0,line_done):
+				if len(list_done[x])==len_size:
+#					print list_done[x]
+					if a == None:
+						a=list_done[x][y][0]
+						q_tmp += "G0 X" + str(-list_done[x][y][0]/zoom) + " Y" + str(-list_done[x][y][1]/zoom) + "\n"
+					elif a==list_done[x][y][0]-3:
+#						print list_done[x][len_size-1][0]
+						a=list_done[x][y][0]
+						q_tmp += "G1 F" + speed + " X" + str(-list_done[x][y][0]/zoom) + " Y" + str(-list_done[x][y][1]/zoom) + "\n"
+					else:
+						a=list_done[x][y][0]
+						q_tmp += "G0 X" + str(-list_done[x][y][0]/zoom) + " Y" + str(-list_done[x][y][1]/zoom) + "\n"
+			y-=1
 		len_size+=2
 		a=None	
 
