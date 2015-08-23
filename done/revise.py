@@ -211,7 +211,7 @@ if __name__ == '__main__':
 	z_level_down="4"
 	z_level_up="0"
 	speed="5000"
-	g = cv2.imread('p1.jpg',cv2.IMREAD_GRAYSCALE)
+	g = cv2.imread('picture.jpg',cv2.IMREAD_GRAYSCALE)
 	gimg=cv2.flip(g,0)
 	height, width = gimg.shape
 	

@@ -181,12 +181,23 @@ def dirGCODE(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 #	print min(len_tmp)
 	len_size=min(len_tmp)
 	len_max=max(len_tmp)
+	a=None
 	while len_size<=len_max:
 		for x in range(0,line_done):
 			if len(list_done[x])==len_size:
-				print list_done[x]
+#				print list_done[x]
+				if a == None:
+					a=list_done[x][len_size-1][0]
+					q_tmp += "G0 X" + str(-list_done[x][len_size-1][0]/zoom) + " Y" + str(-list_done[x][len_size-1][1]/zoom) + "\n"
+				elif a==list_done[x][len_size-1][0]-3:
+#					print list_done[x][len_size-1][0]
+					a=list_done[x][len_size-1][0]
+					q_tmp += "G1 F" + speed + " X" + str(-list_done[x][len_size-1][0]/zoom) + " Y" + str(-list_done[x][len_size-1][1]/zoom) + "\n"
+				else:
+					a=list_done[x][len_size-1][0]
+					q_tmp += "G0 X" + str(-list_done[x][len_size-1][0]/zoom) + " Y" + str(-list_done[x][len_size-1][1]/zoom) + "\n"
 		len_size+=2
-	
+		a=None	
 
 	q.send(q_tmp)
 	q.close()
