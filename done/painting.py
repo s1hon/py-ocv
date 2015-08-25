@@ -2,6 +2,7 @@ import cv2
 import numpy as np,sys
 import os
 import time
+import math
 from multiprocessing import Process, Pipe
 
 #Frame
@@ -18,7 +19,7 @@ def dirINIT(height,width,zoom,z_level_down,z_level_up,speed):
     	return q_tmp
 
 #produce G-code
-def dirGCODE(q,list_total,line,zoom,z_level_down,z_level_up,speed):
+def diroutline(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 	q_tmp=''
 	list_tmp=[]
 	list_clearup=[]
@@ -201,6 +202,17 @@ def dirGCODE(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 			y-=1
 		len_size+=2
 		a=None	
+	
+	for x in range(0,len(len_tmp)):
+		if len_tmp[x]!=len_tmp[x-1] and x>0:
+			print list_done[x-1]
+			print list_done[x]
+#			print int(math.fabs(list_done[x][0][1]-list_done[x-1][0][1]))
+		
+			for tx in range(0,len(list_done[x])):
+				for ty in range(0,len(list_done[x-1])):
+					print int(math.fabs(list_done[x][tx][1]-list_done[x-1][ty][1])) 		
+
 
 	q.send(q_tmp)
 	q.close()
@@ -418,7 +430,7 @@ if __name__ == '__main__':
 			
 #	print list_p0[1]
 
-	p0 = Process(target=dirGCODE,args=(q0,list_p0[0],list_p0[1],zoom,z_level_down,z_level_up,speed,))
+	p0 = Process(target=diroutline,args=(q0,list_p0[0],list_p0[1],zoom,z_level_down,z_level_up,speed,))
 #	p1 = Process(target=dirGCODE,args=(q1,list_p1[0],list_p1[1],zoom,z_level_down,z_level_up,speed,))
 #	p2 = Process(target=dirGCODE,args=(q2,list_p2[0],list_p2[1],zoom,z_level_down,z_level_up,speed,))
 #	p0 = dirGCODE(list_p0[0],list_p0[1],zoom,z_level_down,z_level_up,speed,)

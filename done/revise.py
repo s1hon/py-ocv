@@ -77,8 +77,8 @@ def direction1(gimg,level,intr):
                                         list_total[line].append([x,y])
                         elif (gimg[x-1][y]<=color and x>0):
                                 list_total[line].append([x,y])
-                if (y%2!=0):
-                        list_total[line].reverse()
+#                if (y%2!=0):
+#                        list_total[line].reverse()
                 line+=1
 	return list_total,line
 
@@ -237,7 +237,7 @@ if __name__ == '__main__':
 	else:
 		color_level = [3,5,6]
 
-	list_p0 = direction0(gimg,color_level[0],intr0,)
+	list_p0 = direction1(gimg,color_level[0],intr0,)
 #	list_p1 = direction1(gimg,color_level[1],intr0,)
 #	list_p2 = direction2(gimg,color_level[2],intr0,)
 #	print list_p0[0]
