@@ -208,12 +208,21 @@ def diroutline(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 			print list_done[x-1]
 			print list_done[x]
 #			print int(math.fabs(list_done[x][0][1]-list_done[x-1][0][1]))
-		
-			for tx in range(0,len(list_done[x])):
+#			print len(list_done[x])
+			a=None
+			if len(list_done[x])<len(list_done[x-1]):
+				for tx in range(0,len(list_done[x])):
+					num=[]
+					for ty in range(0,len(list_done[x-1])):
+						num.append(int(math.fabs(list_done[x][tx][1]-list_done[x-1][ty][1])))
+					print min(num)
+						
+			else:
 				for ty in range(0,len(list_done[x-1])):
-					print int(math.fabs(list_done[x][tx][1]-list_done[x-1][ty][1])) 		
-
-
+					num=[]
+					for tx in range(0,len(list_done[x])):
+						num.append(int(math.fabs(list_done[x][tx][1]-list_done[x-1][ty][1])))
+					print min(num)
 	q.send(q_tmp)
 	q.close()
 
