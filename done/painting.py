@@ -202,27 +202,51 @@ def diroutline(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 			y-=1
 		len_size+=2
 		a=None	
-	
+
+#	----------------
+#	2_4 4_6 6_2 draw 
+#	----------------
+	list_tmp=[]	
+	line_tmp=0
 	for x in range(0,len(len_tmp)):
 		if len_tmp[x]!=len_tmp[x-1] and x>0:
-			print list_done[x-1]
-			print list_done[x]
-#			print int(math.fabs(list_done[x][0][1]-list_done[x-1][0][1]))
-#			print len(list_done[x])
-			a=None
-			if len(list_done[x])<len(list_done[x-1]):
-				for tx in range(0,len(list_done[x])):
-					num=[]
-					for ty in range(0,len(list_done[x-1])):
-						num.append(int(math.fabs(list_done[x][tx][1]-list_done[x-1][ty][1])))
-					print min(num)
-						
-			else:
-				for ty in range(0,len(list_done[x-1])):
-					num=[]
-					for tx in range(0,len(list_done[x])):
-						num.append(int(math.fabs(list_done[x][tx][1]-list_done[x-1][ty][1])))
-					print min(num)
+			list_tmp.append(list_done[x-1])
+			list_tmp.append(list_done[x])
+#			print list_done[x-1]
+#			print list_done[x]
+#	print len(list_tmp)
+#	print list_tmp
+	count=0
+	for x in range(0,len(list_tmp)):	
+#		print int(math.fabs(list_done[x][0][1]-list_done[x-1][0][1]))
+#		print len(list_done[x])
+#		print list_tmp[x]
+		a=None
+		if len(list_tmp[x])<len(list_tmp[x-1]) and x>0:
+			for tx in range(0,len(list_tmp[x])):
+				num=[]
+				for ty in range(0,len(list_tmp[x-1])):
+					num.append(int(math.fabs(list_tmp[x][tx][1]-list_tmp[x-1][ty][1])))
+				print num
+#				print tx
+#				print num.index(min(num))
+#				print list_tmp[x][tx]
+				print list_tmp[x][tx]
+				print list_tmp[x-1][num.index(min(num))]
+				q_tmp += "G0 X" + str(-list_tmp[x][tx][0]/zoom) + " Y" + str(-list_tmp[x][tx][1]/zoom) + "\n"
+				q_tmp += "G1 F" + speed + " X" + str(-list_tmp[x-1][num.index(min(num))][0]/zoom) + " Y" + str(-list_tmp[x-1][num.index(min(num))][1]/zoom) + "\n"
+		elif len(list_tmp[x])>len(list_tmp[x-1]) and x>0:
+			for ty in range(0,len(list_tmp[x-1])):
+				num=[]
+				for tx in range(0,len(list_tmp[x])):
+					num.append(int(math.fabs(list_tmp[x][tx][1]-list_tmp[x-1][ty][1])))
+#				print min(num)
+#				print ty
+#				print num.index(min(num))
+				print list_tmp[x-1][ty]
+				print list_tmp[x][num.index(min(num))]
+				q_tmp += "G0 X" + str(-list_tmp[x-1][ty][0]/zoom) + " Y" + str(-list_tmp[x-1][ty][1]/zoom) + "\n"
+                                q_tmp += "G1 F" + speed + " X" + str(-list_tmp[x][num.index(min(num))][0]/zoom) + " Y" + str(-list_tmp[x][num.index(min(num))][1]/zoom) + "\n"
 	q.send(q_tmp)
 	q.close()
 
