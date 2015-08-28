@@ -122,7 +122,7 @@ def diroutline(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 	for tmp_x in range(0,line_tmp):
 		list_done.append([])
 		for tmp_y in list_new[tmp_x]:
-			if tmp_y not in list_clearup:
+			if tmp_y not in list_clearup :
 				list_done[line_done].append(tmp_y)
 		line_done+=1
 		list_new[tmp_x]=list_done
@@ -131,7 +131,9 @@ def diroutline(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 #	print list_done data
 #	--------------------
 #	for x in range(0,line_done):
-#		print list_done[x]
+#		if list_done[x]!=[]:
+#			print list_done[x]
+			
 #	---------------------------------------
 #	check whether the points correct or not 
 #	---------------------------------------
@@ -144,30 +146,6 @@ def diroutline(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 #				q_tmp += "G1 F" + speed + " X" + str(-list_done[x][y][0]/zoom) + " Y" + str(-list_done[x][y][1]/zoom) + "\n"
 #				q_tmp += "G0 Z"+ z_level_up + "\n"
 
-#	---------------
-#	draw an outline
-#	---------------
-#	for x in range(line_done-1,-1,-1):
-#		for y in range (len(list_done[x])-1,-1,-1):
-#			if x==line_done-1:
-#				if (y%2!=0):
-#					q_tmp += "G0 X" + str(-list_done[x][y][0]/zoom) + " Y" + str(-list_done[x][y][1]/zoom) + "\n"
-#				else:
-#					q_tmp += "G1 F" + speed + " X" + str(-list_done[x][y][0]/zoom) + " Y" + str(-list_done[x][y][1]/zoom) + "\n"
-#
-#			if (y==0):
-#				if ((list_done[x][y][0]==list_done[x-1][y][0]-3 and x>0)):
-#					q_tmp += "G0 X" + str(-list_done[x][y][0]/zoom) + " Y" + str(-list_done[x][y][1]/zoom) + "\n"
-#				else:
-#					q_tmp += "G1 F" + speed + " X" + str(-list_done[x][y][0]/zoom) + " Y" + str(-list_done[x][y][1]/zoom) + "\n"
-#		for y2 in range(0,len(list_done[x])):
-#			if x == 0:
-#				if (y2%2==0):
-#					q_tmp += "G0 X" + str(-list_done[x][y2][0]/zoom) + " Y" + str(-list_done[x][y2][1]/zoom) + "\n"
-#					q_tmp += "G0 Z"+ z_level_down + "\n"
-#				else:
-#					q_tmp += "G1 F" + speed + " X" + str(-list_done[x][y2][0]/zoom) + " Y" + str(-list_done[x][y2][1]/zoom) + "\n"
-#					q_tmp += "G0 Z"+ z_level_up + "\n"
 #	-------------------
 #	save list_done size
 #	-------------------
@@ -180,6 +158,10 @@ def diroutline(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 #	------------------------------
 #	print max(len_tmp)
 #	print min(len_tmp)
+	
+#	------------------------------
+#	draw an outline-left and right
+#	------------------------------
 	len_size=min(len_tmp)
 	len_max=max(len_tmp)
 	a=None
@@ -203,11 +185,18 @@ def diroutline(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 		len_size+=2
 		a=None	
 
-#	----------------
-#	2_4 4_6 6_2 draw 
-#	----------------
+#	--------------------------
+#	draw an outline-up to down
+#	--------------------------
+
+#	-------------------------------
+#	draw an 2 point link to 4 point
+#		4 point link to 6 point
+#		6 point link to 2 point 
+#	-------------------------------
 	list_tmp=[]	
 	line_tmp=0
+	list_t=[]
 	for x in range(0,len(len_tmp)):
 		if len_tmp[x]!=len_tmp[x-1] and x>0:
 			list_tmp.append(list_done[x-1])
@@ -227,14 +216,17 @@ def diroutline(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 				num=[]
 				for ty in range(0,len(list_tmp[x-1])):
 					num.append(int(math.fabs(list_tmp[x][tx][1]-list_tmp[x-1][ty][1])))
-				print num
+#				print num
 #				print tx
 #				print num.index(min(num))
+#				print list_tmp
 #				print list_tmp[x][tx]
-				print list_tmp[x][tx]
-				print list_tmp[x-1][num.index(min(num))]
+#				print list_tmp[x-1][num.index(min(num))]
+				list_t.append(list_tmp[x][tx])
+				list_t.append(list_tmp[x-1][num.index(min(num))])			
 				q_tmp += "G0 X" + str(-list_tmp[x][tx][0]/zoom) + " Y" + str(-list_tmp[x][tx][1]/zoom) + "\n"
 				q_tmp += "G1 F" + speed + " X" + str(-list_tmp[x-1][num.index(min(num))][0]/zoom) + " Y" + str(-list_tmp[x-1][num.index(min(num))][1]/zoom) + "\n"
+			
 		elif len(list_tmp[x])>len(list_tmp[x-1]) and x>0:
 			for ty in range(0,len(list_tmp[x-1])):
 				num=[]
@@ -243,10 +235,60 @@ def diroutline(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 #				print min(num)
 #				print ty
 #				print num.index(min(num))
-				print list_tmp[x-1][ty]
-				print list_tmp[x][num.index(min(num))]
+#				print list_tmp[x-1][ty]
+#				print list_tmp[x][num.index(min(num))]
+				list_t.append(list_tmp[x-1][ty])
+                                list_t.append(list_tmp[x][num.index(min(num))])		
 				q_tmp += "G0 X" + str(-list_tmp[x-1][ty][0]/zoom) + " Y" + str(-list_tmp[x-1][ty][1]/zoom) + "\n"
                                 q_tmp += "G1 F" + speed + " X" + str(-list_tmp[x][num.index(min(num))][0]/zoom) + " Y" + str(-list_tmp[x][num.index(min(num))][1]/zoom) + "\n"
+
+#	print list_t
+#	print list_tmp
+
+	list_u_d=[]
+	count=0
+	for x in range(0,len(list_tmp)):
+		for tx in list_tmp[x]:
+			list_u_d.append([])
+			if tx not in list_t:
+				list_u_d[count].append(tx)
+		count+=1
+#	print list_u_d
+	
+	for x in range(0,len(list_u_d)):
+		for y in range(0,len(list_u_d[x])):
+			if list_u_d[x][y]!=[]:
+				if y%2==0:
+					q_tmp += "G0 X" + str(-list_u_d[x][y][0]/zoom) + " Y" + str(-list_u_d[x][y][1]/zoom) + "\n"
+				else:
+					q_tmp += "G1 F" + speed + " X" + str(-list_u_d[x][y][0]/zoom) + " Y" + str(-list_u_d[x][y][1]/zoom) + "\n"
+
+
+
+	len_tmp=[]
+	for x in range(0,line):
+		for y in range(0,len(list_done[x])):
+			len_tmp.append( list_done[x][y][0])
+#	print min(len_tmp)
+#	print max(len_tmp)
+	list_tmp=[]
+	count=0
+	for x in range(0,line):
+		list_tmp.append([])
+		for y in range(0,len(list_done[x])):
+			if list_done[x][y][0]==min(len_tmp) or list_done[x][y][0]==max(len_tmp):
+				list_tmp[count].append(list_done[x][y])
+		count+=1
+		if list_tmp[x]!=[]:
+			for ty in range(0,len(list_tmp[x])):
+				if ty%2==0:
+					q_tmp += "G0 X" + str(-list_tmp[x][ty][0]/zoom) + " Y" + str(-list_tmp[x][ty][1]/zoom) + "\n"
+				else:
+					q_tmp += "G1 F" + speed + " X" + str(-list_tmp[x][ty][0]/zoom) + " Y" + str(-list_tmp[x][ty][1]/zoom) + "\n"
+
+
+
+
 	q.send(q_tmp)
 	q.close()
 
