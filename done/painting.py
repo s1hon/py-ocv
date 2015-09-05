@@ -206,6 +206,7 @@ def diroutline(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 #	print len(list_tmp)
 #	print list_tmp
 	count=0
+	t=0
 	for x in range(0,len(list_tmp)):	
 #		print int(math.fabs(list_done[x][0][1]-list_done[x-1][0][1]))
 #		print len(list_done[x])
@@ -241,7 +242,6 @@ def diroutline(q,list_total,line,zoom,z_level_down,z_level_up,speed):
                                 list_t.append(list_tmp[x][num.index(min(num))])		
 				q_tmp += "G0 X" + str(-list_tmp[x-1][ty][0]/zoom) + " Y" + str(-list_tmp[x-1][ty][1]/zoom) + "\n"
                                 q_tmp += "G1 F" + speed + " X" + str(-list_tmp[x][num.index(min(num))][0]/zoom) + " Y" + str(-list_tmp[x][num.index(min(num))][1]/zoom) + "\n"
-
 #	print list_t
 #	print list_tmp
 

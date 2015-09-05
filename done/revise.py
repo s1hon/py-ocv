@@ -237,7 +237,7 @@ if __name__ == '__main__':
 	else:
 		color_level = [3,5,6]
 
-	list_p0 = direction1(gimg,color_level[0],intr0,)
+	list_p0 = direction0(gimg,color_level[0],intr0,)
 #	list_p1 = direction1(gimg,color_level[1],intr0,)
 #	list_p2 = direction2(gimg,color_level[2],intr0,)
 #	print list_p0[0]

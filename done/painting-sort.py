@@ -9,8 +9,7 @@ from multiprocessing import Process, Pipe
 #--------------------
 # Draw an outline-1 |
 #--------------------
-def diroutline1(q,list_total,line,zoom,z_level_down,z_level_up,speed):
-	q_tmp=''
+def filter0(list_total,line,zoom):
 	list_tmp=[]
 	list_clearup=[]
 	
@@ -49,7 +48,7 @@ def diroutline1(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 				list_t[line_t].append(y)
 		line_t += 1
 		list_total[x] = list_t
-
+	
 #----------------
 # Second filter |
 #----------------
@@ -72,36 +71,77 @@ def diroutline1(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 	line_f=0
 
 	for x in range(0,line_t):
-		list_filter.append([])			
+		list_filter.append([])
 		for y in list_t[x]:
 			if y not in list_clearup:
 				list_filter[line_f].append(y)
 		line_f+=1
 		list_t[x] = list_filter
+	
 
 #------------------------------------------
 # Check whether the points correct or not |
 #------------------------------------------
-	for x in range(0,line_f):
-		for y in range(0,len(list_filter[x])):
-			if (y%2==0):
-				q_tmp += "G0 X" + str(-list_filter[x][y][0]/zoom) + " Y" + str(-list_filter[x][y][1]/zoom) + "\n"
-				q_tmp += "G0 Z"+ z_level_down + "\n"
-			else:
-				q_tmp += "G1 F" + speed + " X" + str(-list_filter[x][y][0]/zoom) + " Y" + str(-list_filter[x][y][1]/zoom) + "\n"
-				q_tmp += "G0 Z"+ z_level_up + "\n"
+#	q_tmp=''
+#	for x in range(0,line_f):
+#		for y in range(0,len(list_filter[x])):
+#			if (y%2==0):
+#				q_tmp += "G0 X" + str(-list_filter[x][y][0]/zoom) + " Y" + str(-list_filter[x][y][1]/zoom) + "\n"
+#				q_tmp += "G0 Z"+ z_level_down + "\n"
+#			else:
+#				q_tmp += "G1 F" + speed + " X" + str(-list_filter[x][y][0]/zoom) + " Y" + str(-list_filter[x][y][1]/zoom) + "\n"
+#				q_tmp += "G0 Z"+ z_level_up + "\n"
+#	q.send(q_tmp)
+#	q.close()
+	return list_filter,line_f
 
+def outline(q,list_filter,line_f,zoom,z_level_down,z_level_up,speed):
+#----------------------------------------------
+# The point of each layer save to the len_tmp |
+#----------------------------------------------
+	len_tmp=[]
+	for lx in range(0,line_f):
+		len_tmp.append(len(list_filter[lx]))	
 	
+#-------------------------
+# Draw an left and right |
+#-------------------------
+	q_tmp=''
+	len_s=min(len_tmp)
+	len_max=max(len_tmp)
+	a=None
+	while len_s <= len_max:
+		y = len_s-1
+		while y >= 0:
+			for x in range(0,line_f):
+				if (len(list_filter[x]) == len_s):
+					if (a == None):
+						a = list_filter[x][y][0]
+						q_tmp += "G0 X" + str(-list_filter[x][y][0]/zoom) + " Y" + str(-list_filter[x][y][1]/zoom) + "\n"
+					elif (a == list_filter[x][y][0]-3):
+						a = list_filter[x][y][0]
+						q_tmp += "G1 F" + speed + " X" + str(-list_filter[x][y][0]/zoom) + " Y" + str(-list_filter[x][y][1]/zoom) + "\n"
+					else:
+						a = list_filter[x][y][0]
+						q_tmp += "G0 X" + str(-list_filter[x][y][0]/zoom) + " Y" + str(-list_filter[x][y][1]/zoom) + "\n"
+			y-=1
+		len_s+=2
+		a=None
+
+#----------------------------
+# Draw an up top and bottom |
+#----------------------------
+	x_tmp=[]
+	print min(list_filter)
+	print max(list_filter)
+				
 
 	q.send(q_tmp)
 	q.close()
-
-
-
-	
-#---------------------------------------
-#Check whether the points correct or not
-#---------------------------------------
+		
+#------------------------
+# Draw an picture level |
+#------------------------
 def dirGCODE(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 	q_tmp=''
 	for line_x in range(0,line):
@@ -207,8 +247,8 @@ if __name__ == '__main__':
 		color_level = [3,5,6]
 
 	list_p0 = direction0(gimg,color_level[0],intr0,)
-#	p0 = Process(target=diroutline1,args=(list_p0[0],list_p0[1],zoom,))
-	p0 = Process(target=diroutline1,args=(q0,list_p0[0],list_p0[1],zoom,z_level_down,z_level_up,speed,))
+	filter_p0 = filter0(list_p0[0],list_p0[1],zoom,)
+	p0 = Process(target=outline,args=(q0,filter_p0[0],filter_p0[1],zoom,z_level_down,z_level_up,speed,))
 	p0.start()
 	q0_r = q0x.recv()
 	p0.join()
@@ -217,7 +257,7 @@ if __name__ == '__main__':
 	f = open(file_id,'w')
 	f.write(q0_r)
 	f.close()
-
+	print "Done!"
 
 
 
