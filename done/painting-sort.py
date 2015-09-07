@@ -132,10 +132,26 @@ def outline(q,list_filter,line_f,zoom,z_level_down,z_level_up,speed):
 # Draw an up top and bottom |
 #----------------------------
 	x_tmp=[]
-	print min(list_filter)
-	print max(list_filter)
-				
+	for x in range(0,line_f):
+		for y in range(0,len(list_filter[x])):
+			x_tmp.append(list_filter[x][y][0])
+	
+	list_tmp=[]
+	count=0
+	for x in range(0,line_f):
+		list_tmp.append([])
+		for y in range(0,len(list_filter[x])):
+			if (list_filter[x][y][0] == min(x_tmp) or list_filter[x][y][0] == max(x_tmp)):
+				list_tmp[count].append(list_filter[x][y])
+		count+=1
+		if (list_tmp[x] != []):
+			for ty in range(0,len(list_tmp[x])):
+				if (ty%2 == 0):
+					q_tmp += "G0 X" + str(-list_tmp[x][ty][0]/zoom) + " Y" + str(-list_tmp[x][ty][1]/zoom) + "\n"
+				else:
+					q_tmp += "G1 F" + speed + " X" + str(-list_tmp[x][ty][0]/zoom) + " Y" + str(-list_tmp[x][ty][1]/zoom) + "\n"
 
+	
 	q.send(q_tmp)
 	q.close()
 		
@@ -247,8 +263,8 @@ if __name__ == '__main__':
 		color_level = [3,5,6]
 
 	list_p0 = direction0(gimg,color_level[0],intr0,)
-	filter_p0 = filter0(list_p0[0],list_p0[1],zoom,)
-	p0 = Process(target=outline,args=(q0,filter_p0[0],filter_p0[1],zoom,z_level_down,z_level_up,speed,))
+#	filter_p0 = filter0(list_p0[0],list_p0[1],zoom,)
+	p0 = Process(target=outline,args=(q0,list_p0[0],list_p0[1],zoom,z_level_down,z_level_up,speed,))
 	p0.start()
 	q0_r = q0x.recv()
 	p0.join()
