@@ -21,13 +21,21 @@ def dirINIT(height,width,zoom,z_level_down,z_level_up,speed):
 #produce G-code
 def diroutline(q,contours,zoom,z_level_down,z_level_up,speed):
 	q_tmp=''
+	list_area=[]
 	for x in range(0,len(contours)):
-		for y in range(0,len(contours[x])):
-			if y==0:
-				q_tmp += "G0 X"+ str(-contours[x][y][0][1]/zoom) + " Y" + str(-contours[x][y][0][0]/zoom) + "\n"
-			else:
-				q_tmp += "G1 F" + speed + " X"+ str(-contours[x][y][0][1]/zoom) + " Y" + str(-contours[x][y][0][0]/zoom) + "\n"
+		area = cv2.contourArea(contours[x])
+		list_area.append(area)
 
+	print list_area.index(max(list_area))
+	
+	x=list_area.index(max(list_area))
+	for y in range(0,len(contours[x])):
+		
+		if y==0:
+			q_tmp += "G0 X"+ str(-contours[x][y][0][0]/zoom) + " Y" + str(-contours[x][y][0][1]/zoom) + "\n"
+		else:
+			q_tmp += "G1 F" + speed + " X"+ str(-contours[x][y][0][0]/zoom) + " Y" + str(-contours[x][y][0][1]/zoom) + "\n"
+		
 	q.send(q_tmp)
 	q.close()
 
