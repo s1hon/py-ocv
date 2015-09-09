@@ -17,10 +17,9 @@ ret,thresh2 = cv2.threshold(img,223,255,cv2.THRESH_BINARY_INV)
 image,contours,hierarchy=cv2.findContours(thresh2,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
 
-print len(contours)
-print contours[7] 
-for x in range(0,len(contours[7])):
-	print contours[7][x][0]
+for x in range(0,len(contours)):
+	for y in range(0,len(contours[x])):
+		print contours[x][y][0]
 
 #cv2.drawContours(img,contours,0,(0,0,255),3)
 
