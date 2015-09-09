@@ -32,9 +32,9 @@ def diroutline(q,contours,zoom,z_level_down,z_level_up,speed):
 	for y in range(0,len(contours[x])):
 		
 		if y==0:
-			q_tmp += "G0 X"+ str(-contours[x][y][0][0]/zoom) + " Y" + str(-contours[x][y][0][1]/zoom) + "\n"
+			q_tmp += "G0 X"+ str(-contours[x][y][0][1]/zoom) + " Y" + str(-contours[x][y][0][0]/zoom) + "\n"
 		else:
-			q_tmp += "G1 F" + speed + " X"+ str(-contours[x][y][0][0]/zoom) + " Y" + str(-contours[x][y][0][1]/zoom) + "\n"
+			q_tmp += "G1 F" + speed + " X"+ str(-contours[x][y][0][1]/zoom) + " Y" + str(-contours[x][y][0][0]/zoom) + "\n"
 		
 	q.send(q_tmp)
 	q.close()
@@ -217,8 +217,9 @@ if __name__ == '__main__':
 	
 	img = cv2.imread('picture.jpg')
 	g = cv2.imread('picture.jpg',cv2.IMREAD_GRAYSCALE)
-	
-	ret,thresh2 = cv2.threshold(g,223,255,cv2.THRESH_BINARY_INV)
+	pic = cv2.flip(g,0)	
+
+	ret,thresh2 = cv2.threshold(pic,223,255,cv2.THRESH_BINARY_INV)
 	image,contours,hierarchy=cv2.findContours(thresh2,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
 
 	
@@ -244,8 +245,8 @@ if __name__ == '__main__':
 	f.write(q0_r)
 	f.close()
 
-#cv2.imshow('pic-gray',gimg)
-#cv2.waitKey(0)
+cv2.imshow('pic-gray',pic)
+cv2.waitKey(0)
 #0-31 black
 #32-63
 #64-95
