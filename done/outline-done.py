@@ -222,8 +222,7 @@ if __name__ == '__main__':
 	pic = cv2.flip(g,0)	
 
 	ret,thresh2 = cv2.threshold(pic,223,255,cv2.THRESH_BINARY_INV)
-	image,contours,hierarchy=cv2.findContours(thresh2,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-
+	image,contours,hierarchy=cv2.findContours(thresh2,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE,offset=(1,-1))
 	
 	q0x,q0 = Pipe()
 	q1x,q1 = Pipe()

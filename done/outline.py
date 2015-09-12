@@ -14,12 +14,14 @@ img = cv2.imread('picture.jpg',cv2.IMREAD_GRAYSCALE)
 ret,thresh1 = cv2.threshold(img,223,255,cv2.THRESH_BINARY)
 ret,thresh2 = cv2.threshold(img,223,255,cv2.THRESH_BINARY_INV)
 
-image,contours,hierarchy=cv2.findContours(thresh2,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+image,contours,hierarchy=cv2.findContours(thresh2,cv2.RETR_TREE,cv2.CHAIN_APPROX_NONE,offset=(1,1))
 
 
-for x in range(0,len(contours)):
-	for y in range(0,len(contours[x])):
-		print contours[x][y][0]
+
+#for x in range(0,len(contours)):
+#	for y in range(0,len(contours[x])):
+#		print contours[x][y][0]
+
 
 cv2.drawContours(g,contours,0,(0,0,255),1)
 
