@@ -25,6 +25,8 @@ def diroutline(q,contours,zoom,z_level_down,z_level_up,speed):
 	for x in range(0,len(contours)):
 		area = cv2.contourArea(contours[x])
 		list_area.append(area)
+	
+	print list_area
 
 	print list_area.index(max(list_area))
 	
@@ -245,8 +247,8 @@ if __name__ == '__main__':
 	f.write(q0_r)
 	f.close()
 
-cv2.imshow('pic-gray',pic)
-cv2.waitKey(0)
+#cv2.imshow('pic-gray',pic)
+#cv2.waitKey(0)
 #0-31 black
 #32-63
 #64-95
