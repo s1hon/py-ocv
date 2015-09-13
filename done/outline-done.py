@@ -22,6 +22,7 @@ def dirINIT(height,width,zoom,z_level_down,z_level_up,speed):
 def diroutline(q,contours,zoom,z_level_down,z_level_up,speed):
 	q_tmp=''
 	list_area=[]
+	tmp=[]
 	for x in range(0,len(contours)):
 		area = cv2.contourArea(contours[x])
 		list_area.append(area)
@@ -29,12 +30,19 @@ def diroutline(q,contours,zoom,z_level_down,z_level_up,speed):
 	
 	x=list_area.index(max(list_area))
 	for y in range(0,len(contours[x])):
-		print contours[x][y][0][1]/zoom	
+		tmp.append(contours[x][y][0][1]/zoom)
 		if y==0:
 			q_tmp += "G0 X"+ str(-contours[x][y][0][1]/zoom) + " Y" + str(-contours[x][y][0][0]/zoom) + "\n"
 		else:
 			q_tmp += "G1 F" + speed + " X"+ str(-contours[x][y][0][1]/zoom) + " Y" + str(-contours[x][y][0][0]/zoom) + "\n"
-		
+	tmp.sort()
+	pt = list(set(tmp))
+	print pt
+
+	for y in range(0,len(contours[x])):
+		if contours[x][y][0][1]/zoom == 0:
+			print contours[x][y][0]
+
 	q.send(q_tmp)
 	q.close()
 
