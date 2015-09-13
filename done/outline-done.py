@@ -26,13 +26,10 @@ def diroutline(q,contours,zoom,z_level_down,z_level_up,speed):
 		area = cv2.contourArea(contours[x])
 		list_area.append(area)
 	
-	print list_area
-
-	print list_area.index(max(list_area))
 	
 	x=list_area.index(max(list_area))
 	for y in range(0,len(contours[x])):
-		
+		print contours[x][y][0][1]/zoom	
 		if y==0:
 			q_tmp += "G0 X"+ str(-contours[x][y][0][1]/zoom) + " Y" + str(-contours[x][y][0][0]/zoom) + "\n"
 		else:
