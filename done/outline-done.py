@@ -46,9 +46,20 @@ def dirlevel(q,contours,zoom,z_level_down,z_level_up,speed):
         q_tmp=''
         list_area=[]
         tmp=[]
-        for x in range(0,len(contours)):
+
+#	for x in range(0,len(contours)):
+#		area = cv2.contourArea(contours[x])
+#		list_area.append(area)
+	
+#	count=len(list_area)
+#	for x in range(0,count):
+#		if list_area[x] >=10:
+#			tmp.append( list_area.index(list_area[x]))
+
+
+#	for x in tmp:
+	for x in range(0,len(contours)):
         	for y in range(0,len(contours[x])):
-			print contours[x][y][0]
                 	if y==0:
                         	q_tmp += "G0 X"+ str(-contours[x][y][0][1]/zoom) + " Y" + str(-contours[x][y][0][0]/zoom) + "\n"
 	                        q_tmp += "G0 Z0.26" + "\n"
@@ -243,12 +254,12 @@ if __name__ == '__main__':
 	pic = cv2.flip(g,0)	
 
 	ret,thresh1 = cv2.threshold(pic,223,255,cv2.THRESH_BINARY_INV)
-#	ret,thresh2 = cv2.threshold(pic,159,255,cv2.THRESH_BINARY_INV)
-#	ret,thresh3 = cv2.threshold(pic,95,255,cv2.THRESH_BINARY_INV)
+	ret,thresh2 = cv2.threshold(pic,159,255,cv2.THRESH_BINARY_INV)
+	ret,thresh3 = cv2.threshold(pic,95,255,cv2.THRESH_BINARY_INV)
 	
 	image,contours1,hierarchy1=cv2.findContours(thresh1,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE,offset=(1,-1))
-#	image,contours2,hierarchy2=cv2.findContours(thresh2,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE,offset=(1,-1))
-#	image,contours3,hierarchy3=cv2.findContours(thresh3,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE,offset=(1,-1))
+	image,contours2,hierarchy2=cv2.findContours(thresh2,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE,offset=(1,-1))
+	image,contours3,hierarchy3=cv2.findContours(thresh3,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE,offset=(1,-1))
 	
 	q0x,q0 = Pipe()
 	q1x,q1 = Pipe()
@@ -258,28 +269,28 @@ if __name__ == '__main__':
 
 
 	p0 = Process(target=diroutline,args=(q0,contours1,zoom,z_level_down,z_level_up,speed,))
-#	p1 = Process(target=dirlevel,args=(q0,contours2,zoom,z_level_down,z_level_up,speed,))
-#	p2 = Process(target=dirlevel,args=(q0,contours3,zoom,z_level_down,z_level_up,speed,))
+	p1 = Process(target=dirlevel,args=(q1,contours2,zoom,z_level_down,z_level_up,speed,))
+	p2 = Process(target=dirlevel,args=(q2,contours3,zoom,z_level_down,z_level_up,speed,))
 
 	p0.start()
-#	p1.start()
-#	p2.start()
+	p1.start()
+	p2.start()
 
 	q0_r = q0x.recv()
-#	q1_r = q1x.recv()
-#	q2_r = q2x.recv()
+	q1_r = q1x.recv()
+	q2_r = q2x.recv()
 
 	p0.join()
-#	p1.join()
-#	p2.join()
+	p1.join()
+	p2.join()
 
 	print("Enter the G-code.....")
 	filename='outline'
 	file_id = str(filename) + '.nc'
 	f = open(file_id,'w')
 	f.write(q0_r)
-#	f.write(q1_r)
-#	f.write(q2_r)
+	f.write(q1_r)
+	f.write(q2_r)
 	f.close()
 
 #cv2.imshow('pic-gray',pic)

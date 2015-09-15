@@ -22,14 +22,14 @@ image,contours,hierarchy=cv2.findContours(thresh1,cv2.RETR_TREE,cv2.CHAIN_APPROX
 #		print contours[x][y][0]
 
 
-cv2.drawContours(img,contours,-1,(0,0,255),1)
+cv2.drawContours(g,contours,-1,(0,0,255),1)
 
 #ret,thresh3 = cv2.threshold(img,127,255,cv2.THRESH_TRUNC)
 #ret,thresh4 = cv2.threshold(img,127,255,cv2.THRESH_TOZERO)
 #ret,thresh5 = cv2.threshold(img,127,255,cv2.THRESH_TOZERO_INV)
 
 
-cv2.imshow("img",img)
+cv2.imshow("img",g)
 #cv2.imshow("1",thresh1)
 #cv2.imshow("2",thresh2)
 #cv2.imshow("3",thresh3)
