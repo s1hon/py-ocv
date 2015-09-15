@@ -26,15 +26,19 @@ def diroutline(q,contours,zoom,z_level_down,z_level_up,speed):
 	for x in range(0,len(contours)):
 		area = cv2.contourArea(contours[x])
 		list_area.append(area)
-	
 		
 	x=list_area.index(max(list_area))
 	for y in range(0,len(contours[x])):
 		if y==0:
 			q_tmp += "G0 X"+ str(-contours[x][y][0][1]/zoom) + " Y" + str(-contours[x][y][0][0]/zoom) + "\n"
+			q_tmp += "G0 Z0.26" + "\n"
+		elif y==len(contours[x])-1:
+			q_tmp += "G1 F" + speed + " X"+ str(-contours[x][y][0][1]/zoom) + " Y" + str(-contours[x][y][0][0]/zoom) + "\n"
+			q_tmp += "G1 F" + speed + " X"+ str(-contours[x][0][0][1]/zoom) + " Y" + str(-contours[x][0][0][0]/zoom) + "\n"
 		else:
 			q_tmp += "G1 F" + speed + " X"+ str(-contours[x][y][0][1]/zoom) + " Y" + str(-contours[x][y][0][0]/zoom) + "\n"
 
+	q_tmp += "G0 Z0" + "\n"
 	q.send(q_tmp)
 	q.close()
 
@@ -218,8 +222,11 @@ if __name__ == '__main__':
 	g = cv2.imread('picture.jpg',cv2.IMREAD_GRAYSCALE)
 	pic = cv2.flip(g,0)	
 
-	ret,thresh2 = cv2.threshold(pic,223,255,cv2.THRESH_BINARY_INV)
-	image,contours,hierarchy=cv2.findContours(thresh2,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE,offset=(1,-1))
+	ret,thresh1 = cv2.threshold(pic,223,255,cv2.THRESH_BINARY_INV)
+	ret,thresh2 = cv2.threshold(pic,159,255,cv2.THRESH_BINARY_INV)
+	ret,thresh3 = cv2.threshold(pic,95,255,cv2.THRESH_BINARY_INV)
+	
+	image,contours,hierarchy=cv2.findContours(thresh1,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE,offset=(1,-1))
 	
 	q0x,q0 = Pipe()
 	q1x,q1 = Pipe()
