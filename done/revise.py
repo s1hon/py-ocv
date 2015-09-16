@@ -208,7 +208,7 @@ if __name__ == '__main__':
 	zoom=3
 	intr0=3
 	intr1=1
-	z_level_down="0.26"
+	z_level_down="0.25"
 	z_level_up="0"
 	speed="5000"
 	g = cv2.imread('picture.jpg',cv2.IMREAD_GRAYSCALE)
