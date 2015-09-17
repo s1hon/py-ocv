@@ -20,16 +20,18 @@ def dirINIT(height,width,zoom,z_level_down,z_level_up,speed):
 #produce G-code
 def dirGCODE(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 	q_tmp=''
+	
 	for line_x in range(0,line):
+		if (len(list_total[line_x])%2 == 0):
                	# len() = list size
 #		print len(list_total[line_x])
-               	for line_y in range (0, len(list_total[line_x])):
-                       	if (line_y%2==0):
-                               	q_tmp += "G0 X" + str(-list_total[line_x][line_y][0]/zoom) + " Y" + str(-list_total[line_x][line_y][1]/zoom) + "\n"
-                               	q_tmp += "G0 Z"+ z_level_down + "\n"
-                       	else:
-                               	q_tmp += "G1 F" + speed + " X" + str(-list_total[line_x][line_y][0]/zoom) + " Y" + str(-list_total[line_x][line_y][1]/zoom) + "\n"
-                               	q_tmp += "G0 Z"+ z_level_up + "\n"
+  	             	for line_y in range (0, len(list_total[line_x])):
+        	               	if (line_y%2==0):
+                	               	q_tmp += "G0 X" + str(-list_total[line_x][line_y][0]/zoom) + " Y" + str(-list_total[line_x][line_y][1]/zoom) + "\n"
+                        	       	q_tmp += "G0 Z"+ z_level_down + "\n"
+	                       	else:
+        	                       	q_tmp += "G1 F" + speed + " X" + str(-list_total[line_x][line_y][0]/zoom) + " Y" + str(-list_total[line_x][line_y][1]/zoom) + "\n"
+                	               	q_tmp += "G0 Z"+ z_level_up + "\n"
 
 #      		print list_total[line_x]
 	q.send(q_tmp)
@@ -240,8 +242,8 @@ if __name__ == '__main__':
 	list_p0 = direction0(gimg,color_level[0],intr0,)
 	list_p1 = direction1(gimg,color_level[1],intr0,)
 	list_p2 = direction2(gimg,color_level[2],intr0,)
-#	print list_p0[0]
-#	print list_p0[1]
+
+	
 
 	p0 = Process(target=dirGCODE,args=(q0,list_p0[0],list_p0[1],zoom,z_level_down,z_level_up,speed,))
 	p1 = Process(target=dirGCODE,args=(q1,list_p1[0],list_p1[1],zoom,z_level_down,z_level_up,speed,))
@@ -257,6 +259,7 @@ if __name__ == '__main__':
 	q0_r = q0x.recv()
 	q1_r = q1x.recv()
 	q2_r = q2x.recv()	
+
 #	print q0_r
 	print("End of Get the Pipe....")
 
@@ -269,11 +272,12 @@ if __name__ == '__main__':
 	file_id = str(filename) + '.nc'
 	f = open(file_id,'w')
 #	f.write(init_r)
+
 	f.write(q0_r)
 	f.write(q1_r)
 	f.write(q2_r)
 #	f.write(list_p2)
-	f.write("G0 Z0\rG0 X0 Y0\r")
+	f.write("$H\r")
 	f.close()
 
 #cv2.imshow('pic-gray',gimg)
