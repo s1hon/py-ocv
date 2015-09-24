@@ -210,7 +210,7 @@ if __name__ == '__main__':
 	zoom=3
 	intr0=3
 	intr1=1
-	z_level_down="0.25"
+	z_level_down="0.26"
 	z_level_up="0"
 	speed="5000"
 	g = cv2.imread('picture.jpg',cv2.IMREAD_GRAYSCALE)
@@ -277,7 +277,6 @@ if __name__ == '__main__':
 	f.write(q1_r)
 	f.write(q2_r)
 #	f.write(list_p2)
-	f.write("$H\r")
 	f.close()
 
 #cv2.imshow('pic-gray',gimg)
