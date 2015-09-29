@@ -2,7 +2,13 @@ import cv2
 import numpy as np,sys
 import os
 import time
+import math
 from multiprocessing import Process, Pipe
+
+from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
+    FileTransferSpeed, FormatLabel, Percentage, \
+    ProgressBar, ReverseBar, RotatingMarker, \
+    SimpleProgress, Timer, AdaptiveETA, AdaptiveTransferSpeed
 
 #produce G-code
 def diroutline(q,contours,zoom,z_level_down,z_level_up,speed):
@@ -260,6 +266,8 @@ def Gcode_Creater(print_id):
     p4.start()
     p5.start()
 
+    pbar += 10
+
     q0_r = q0x.recv()
     q1_r = q1x.recv()
     q2_r = q2x.recv()
@@ -284,3 +292,7 @@ def Gcode_Creater(print_id):
     f.write(q4_r)
     f.write(q5_r)
     f.close()
+
+    pbar += 90
+    time.sleep(0.5)
+    pbar.finish()
