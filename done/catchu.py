@@ -8,7 +8,7 @@ from multiprocessing import Process, Pipe
 from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
     FileTransferSpeed, FormatLabel, Percentage, \
     ProgressBar, ReverseBar, RotatingMarker, \
-    SimpleProgress, Timer, AdaptiveETA, AdaptiveTransferSpeed
+    SimpleProgress, Timer
 
 #produce G-code
 def diroutline(q,contours,zoom,z_level_down,z_level_up,speed):
@@ -86,7 +86,7 @@ def dirGCODE(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 
 
 #direction top to bottom
-def direction0(gimg,level,intr):
+def direction0(gimg,level,intr,zoom):
     color = GetLevel(level)
     height, width = gimg.shape
     q_tmp=''
@@ -109,7 +109,7 @@ def direction0(gimg,level,intr):
 
     return list_total,line
 
-def direction1(gimg,level,intr):
+def direction1(gimg,level,intr,zoom):
     color = GetLevel(level)
     height, width = gimg.shape
     q_tmp=''
@@ -131,7 +131,7 @@ def direction1(gimg,level,intr):
         line+=1
     return list_total,line
 
-def direction2(gimg,level,intr):
+def direction2(gimg,level,intr,zoom):
     color = GetLevel(level)
     height, width = gimg.shape
     q_tmp=''
@@ -250,9 +250,9 @@ def Gcode_Creater(print_id):
     p1 = Process(target=dirlevel,args=(q1,contours2,zoom,z_level_down,z_level_up,speed,))
     p2 = Process(target=dirlevel,args=(q2,contours3,zoom,z_level_down,z_level_up,speed,))
 
-    list_p3 = direction0(pic,color_level[0],intr0,)
-    list_p4 = direction1(pic,color_level[1],intr0,)
-    list_p5 = direction2(pic,color_level[2],intr0,)
+    list_p3 = direction0(pic,color_level[0],intr0,zoom,)
+    list_p4 = direction1(pic,color_level[1],intr0,zoom,)
+    list_p5 = direction2(pic,color_level[2],intr0,zoom,)
 
     p3 = Process(target=dirGCODE,args=(q3,list_p3[0],list_p3[1],zoom,z_level_down,z_level_up,speed,))
     p4 = Process(target=dirGCODE,args=(q4,list_p4[0],list_p4[1],zoom,z_level_down,z_level_up,speed,))
@@ -266,7 +266,7 @@ def Gcode_Creater(print_id):
     p4.start()
     p5.start()
 
-    pbar += 10
+    pbar.update(10)
 
     q0_r = q0x.recv()
     q1_r = q1x.recv()
@@ -293,6 +293,6 @@ def Gcode_Creater(print_id):
     f.write(q5_r)
     f.close()
 
-    pbar += 90
+    pbar.update(90)
     time.sleep(0.5)
     pbar.finish()
