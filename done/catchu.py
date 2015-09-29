@@ -4,161 +4,177 @@ import os
 import time
 from multiprocessing import Process, Pipe
 
-from progressbar import AnimatedMarker, Bar, BouncingBar, Counter, ETA, \
-    FileTransferSpeed, FormatLabel, Percentage, \
-    ProgressBar, ReverseBar, RotatingMarker, \
-    SimpleProgress, Timer, AdaptiveETA, AdaptiveTransferSpeed
+#produce G-code
+def diroutline(q,contours,zoom,z_level_down,z_level_up,speed):
+    q_tmp=''
+    list_area=[]
+    tmp=[]
+    for x in range(0,len(contours)):
+        area = cv2.contourArea(contours[x])
+        list_area.append(area)
+        
+    x=list_area.index(max(list_area))
+    for y in range(0,len(contours[x])):
+        if y==0:
+            q_tmp += "G1 F" + speed + " X"+ str(-contours[x][y][0][1]/zoom) + " Y" + str(-contours[x][y][0][0]/zoom) + "\n"
+            q_tmp += "G0 Z" + z_level_down + "\n"
+        elif y==len(contours[x])-1:
+            q_tmp += "G1 F" + speed + " X"+ str(-contours[x][y][0][1]/zoom) + " Y" + str(-contours[x][y][0][0]/zoom) + "\n"
+            q_tmp += "G1 F" + speed + " X"+ str(-contours[x][0][0][1]/zoom) + " Y" + str(-contours[x][0][0][0]/zoom) + "\n"
+        else:
+            q_tmp += "G1 F" + speed + " X"+ str(-contours[x][y][0][1]/zoom) + " Y" + str(-contours[x][y][0][0]/zoom) + "\n"
 
-def dirINIT(height,width,zoom,z_level_down,z_level_up,speed):
-    q_tmp = "G17\rM3 S1000\r$H\r"
-    q_tmp +="G0 Z0\r"
-    q_tmp +="G0 X0 Y0\r"
-    q_tmp += "G0 Z"+ z_level_down + "\r"
-    q_tmp += "G1 F"+ speed +" X" + str(-height/zoom) +" Y0" + "\r"
-    q_tmp += "G1 F"+ speed +" Y" + str(-width/zoom) + "\r"
-    q_tmp += "G1 F"+ speed +" X0 " + "\r"
-    q_tmp += "G1 F"+ speed +" Y0" + "\r"
-    q_tmp += "G0 Z"+ z_level_up + "\r"
-    return q_tmp
+    q_tmp += "G0 Z" + z_level_up + "\n"
+    q.send(q_tmp)
+    q.close()
+
+def dirlevel(q,contours,zoom,z_level_down,z_level_up,speed):
+    q_tmp=''
+    list_area=[]
+    tmp=[]
+
+    for x in range(0,len(contours)):
+        area = cv2.contourArea(contours[x])
+        list_area.append(area)
+    
+    count=len(list_area)
+    for x in range(0,count):
+        if list_area[x] >=10:
+            tmp.append( list_area.index(list_area[x]))
 
 
-def direction0(q,gimg,level,intr,zoom,z_level_down,z_level_up,speed):
+    for x in tmp:
+#   for x in range(0,len(contours)):
+        for y in range(0,len(contours[x])):
+            if y==0:
+                    q_tmp += "G1 F" + speed + " X"+ str(-contours[x][y][0][1]/zoom) + " Y" + str(-contours[x][y][0][0]/zoom) + "\n"
+                    q_tmp += "G0 Z" + z_level_down  + "\n"
+            elif y==len(contours[x])-1:
+                    q_tmp += "G1 F" + speed + " X"+ str(-contours[x][y][0][1]/zoom) + " Y" + str(-contours[x][y][0][0]/zoom) + "\n"
+                    q_tmp += "G1 F" + speed + " X"+ str(-contours[x][0][0][1]/zoom) + " Y" + str(-contours[x][0][0][0]/zoom) + "\n"
+            else:
+                    q_tmp += "G1 F" + speed + " X"+ str(-contours[x][y][0][1]/zoom) + " Y" + str(-contours[x][y][0][0]/zoom) + "\n"
+
+        q_tmp += "G0 Z" + z_level_up + "\n"
+    q.send(q_tmp)
+    q.close()
+
+def dirGCODE(q,list_total,line,zoom,z_level_down,z_level_up,speed):
+    q_tmp=''
+
+    for line_x in range(0,line):
+        if (len(list_total[line_x])%2 == 0):
+        # len() = list size
+#       print len(list_total[line_x])
+            for line_y in range (0, len(list_total[line_x])):
+                if (line_y%2==0):
+                    q_tmp += "G1 F" + speed + " X" + str(-list_total[line_x][line_y][0]/zoom) + " Y" + str(-list_total[line_x][line_y][1]/zoom) + "\n"
+                    q_tmp += "G0 Z"+ z_level_down + "\n"
+                else:
+                    q_tmp += "G1 F" + speed + " X" + str(-list_total[line_x][line_y][0]/zoom) + " Y" + str(-list_total[line_x][line_y][1]/zoom) + "\n"
+                    q_tmp += "G0 Z"+ z_level_up + "\n"
+
+#       print list_total[line_x]
+    q.send(q_tmp)
+    q.close()
+
+
+#direction top to bottom
+def direction0(gimg,level,intr):
     color = GetLevel(level)
     height, width = gimg.shape
     q_tmp=''
-
+    line=0
+    list_total=[]
+    
     for x in range(0,height,intr):
-        if x%2==0:
-            for y in range(width):
-                if gimg[x][y]<=color: # black
-                    if (gimg[x][y-1]>color or y==0): # white || y=0
-                        q_tmp += "G0 X" + str(-x/zoom) + " Y" + str(-y/zoom) + "\r"
-                        q_tmp += "G0 Z"+ z_level_down + "\r"                                         	#pen down
-                    elif y==(width-1): # if y has gone end.
-                        q_tmp += "G1 F"+ speed +" X" + str(-x/zoom) + " Y" + str(-y/zoom) + "\r"     	#draw
-                        q_tmp += "G0 Z"+ z_level_up + "\r"                                         	#pen up
-                elif (gimg[x][y-1]<=color and y>0): # black && y > 0
-                    q_tmp += "G1 F"+ speed +" X" + str(-x/zoom) + " Y" + str(-(y-1)/zoom) + "\r"         	#draw
-                    q_tmp += "G0 Z"+ z_level_up + "\r"                                                 	#pen up
-        else:
-            for y in range((width-1),-1,-1):
-                if gimg[x][y]<=color: # black
-                    if (gimg[x][y-1]>color or y==0): # white || y=0
-                        q_tmp += "G1 F"+ speed +" X" + str(-x/zoom) + " Y" + str(-y/zoom) + "\r" 		#draw
-                        q_tmp += "G0 Z"+ z_level_up + "\r"                                     		#pen up
-                    elif y==(width-1):
-                        q_tmp += "G0 X" + str(-x/zoom) + " Y" + str(-(y-1)/zoom) + "\r"
-                        q_tmp += "G0 Z"+ z_level_down + "\r"                                     		#pen down
-                elif (gimg[x][y-1]<=color and y>0): # black && y > 0
-                    q_tmp += "G0 X" + str(-x/zoom) + " Y" + str(-(y-1)/zoom) + "\r"
-                    q_tmp += "G0 Z"+ z_level_down + "\r"                                             	#pen down
-    q.send(q_tmp)
-    q.close
+        list_total.append([])
+        for y in range(0,width):
+            if (gimg[x][y]<=color):
+                if (gimg[x][y-1]>color or y==0):
+                    list_total[line].append([x,y])
+                elif (y==(width//zoom)*3):
+                    list_total[line].append([x,y])
+            elif (gimg[x][y-1]<=color and y>0):
+                list_total[line].append([x,y])
+        if (x%2!=0):
+            list_total[line].reverse()
+        line+=1
 
-def direction1(q,gimg,level,intr,zoom,z_level_down,z_level_up,speed):
+    return list_total,line
+
+def direction1(gimg,level,intr):
     color = GetLevel(level)
     height, width = gimg.shape
     q_tmp=''
+    line=0
+    list_total=[]
 
     for y in range(0,width,intr):
-        if y%2==0:
-            for x in range(height):
-                if gimg[x][y]<=color: # black
-                    if (gimg[x-1][y]>color or x==0): # white || y=0
-                        q_tmp += "G0 X" + str(-x/zoom) + " Y" + str(-y/zoom) + "\r"
-                        q_tmp += "G0 Z"+ z_level_down + "\r"                                         	#pen down
-                    elif x==(height-1): # if y has gone end.
-                        q_tmp += "G1 F"+ speed +" X" + str(-x/zoom) + " Y" + str(-y/zoom) + "\r"     	#draw
-                        q_tmp += "G0 Z"+ z_level_up + "\r"                                         	#pen up
-                elif (gimg[x-1][y]<=color and x>0): # black && y > 0
-                    q_tmp += "G1 F"+ speed +" X" + str(-(x-1)/zoom) + " Y" + str(-y/zoom) + "\r"         	#draw
-                    q_tmp += "G0 Z"+ z_level_up + "\r"                                                 	#pen up
-        else:
-            for x in range((height-1),-1,-1):
-                if gimg[x][y]<=color: # black
-                    if (gimg[x-1][y]>color or x==0): # white || y=0
-                        q_tmp += "G1 F"+ speed +" X" + str(-x/zoom) + " Y" + str(-y/zoom) + "\r"     	#draw
-                        q_tmp += "G0 Z"+ z_level_up + "\r"                                         	#pen up
-                    elif x==(height-1): # if y has gone end.
-                        q_tmp += "G0 X" + str(-x/zoom) + " Y" + str(-y/zoom) + "\r"
-                        q_tmp += "G0 Z"+ z_level_down + "\r"                                         	#pen down
-                elif (gimg[x-1][y]<=color and x>0): # black && y > 0
-                    q_tmp += "G0 X" + str(-(x-1)/zoom) + " Y" + str(-y/zoom) + "\r"
-                    q_tmp += "G0 Z"+ z_level_down + "\r"                                                 	#pen down
-    q.send(q_tmp)
-    q.close
+        list_total.append([])
+        for x in range(0,height):
+            if (gimg[x][y]<=color):
+                if (gimg[x-1][y]>color or x==0):
+                    list_total[line].append([x,y])
+                elif (x==(height//zoom)*3):
+                    list_total[line].append([x,y])
+            elif (gimg[x-1][y]<=color and x>0):
+                list_total[line].append([x,y])
+        if (y%2!=0):
+            list_total[line].reverse()
+        line+=1
+    return list_total,line
 
-def direction2(q,gimg,level,intr,zoom,z_level_down,z_level_up,speed):
+def direction2(gimg,level,intr):
     color = GetLevel(level)
     height, width = gimg.shape
     q_tmp=''
-    the_range=[]
-
-    for x in range(0,height-1,intr):
-    	the_range.append([x,0])
-    for y in range(0,width-1,intr):
-    	the_range.append([0,y])
-    for t_range in the_range:
-        tx=t_range[0]
-        ty=t_range[1]
-        q_tmp += "G0 X" + str(-tx/zoom) + " Y" + str(-ty/zoom) + "\r"
-        while (tx>=0 and tx<height and ty>=0 and ty<width):
-            if gimg[tx][ty]<=color: # black
-             	if (gimg[tx-intr][ty-intr]>color or tx==0 or ty==0):
-                    q_tmp += "G0 X" + str(-tx/zoom) + " Y" + str(-ty/zoom) + "\r"
-                    q_tmp += "G0 Z"+ z_level_down + "\r"
-                elif (tx==((height//3)*3) or ty==((width//3)*3)) :
-                    q_tmp += "G1 F"+ speed +" X" + str(-tx/zoom) + " Y" + str(-ty/zoom) + "\r"
-                    q_tmp += "G0 Z"+ z_level_up + "\r"
-            elif (gimg[tx-intr][ty-intr]<=color and tx>0 and ty>0):
-                q_tmp += "G1 F"+ speed +" X" + str(-(tx-intr)/zoom) + " Y" + str(-(ty-intr)/zoom) + "\r"
-                q_tmp += "G0 Z"+ z_level_up + "\r"
-            tx+=intr
-            ty+=intr
-
-    q.send(q_tmp)
-    q.close
-
-def direction3(q,gimg,level,intr,zoom,z_level_down,z_level_up,speed):
-    color = GetLevel(level)
-    height, width = gimg.shape
-    q_tmp=''
-    the_range=[]
-
-    for x in range((height//3)*3,0,-intr):
-    	the_range.append([x,0])
-    for y in range(0,width,intr):
-        the_range.append([(height//3)*3,y])
-    for t_range in the_range:
-        tx=t_range[0]
-        ty=t_range[1]
-        q_tmp += "G0 X" + str(-tx/zoom) + " Y" + str(-ty/zoom) + "\r"
-        while (tx>=0 and ty>=0 and tx<height and ty<width):
-       	    if gimg[tx][ty]<=color: # black
-                if (tx+intr<=height and ty-intr>=0) :
-                    if (gimg[tx+intr][ty-intr]>color):
-                        q_tmp += "G0 X" + str(-tx/zoom) + " Y" + str(-ty/zoom) + "\r"
-                        q_tmp += "G0 Z"+ z_level_down + "\r"
-                        if ty==(width//3)*3:
-                            q_tmp += "G0 Z"+ z_level_up + "\r"
-                    elif (tx==0 or ty==(width//3)*3 or tx==(height//3)*3 or ty==0):
-                        q_tmp += "G1 F"+ speed +" X" + str(-tx/zoom) + " Y" + str(-ty/zoom) + "\r"
-                        q_tmp += "G0 Z"+ z_level_up + "\r"
-                elif (tx==(height//3)*3 or ty==0):
-                    q_tmp += "G0 X" + str(-tx/zoom) + " Y" + str(-ty/zoom) + "\r"
-                    q_tmp += "G0 Z"+ z_level_down + "\r"
-            elif (tx+intr<height and ty-intr>0):
-                if (gimg[tx+intr][ty-intr]<=color and tx<height and ty>0):
-                    q_tmp += "G1 F"+ speed +" X" + str(-(tx+intr)/zoom) + " Y" + str(-(ty-intr)/zoom) + "\r"
-                    q_tmp += "G0 Z"+ z_level_up + "\r"
-
-            tx-=intr
-            ty+=intr
-    q.send(q_tmp)
-    q.close
-
+    line=0
+    list_total=[]   
+    
+    for x in range((height//intr)*intr,0,-intr):
+        list_total.append([])
+        y=0
+        while (x>=0 and y<width and x<height and y>=0):
+            if (gimg[x][y]<=color):
+                if (gimg[x-intr][y-intr]>color or x==0 or y==0):
+                    list_total[line].append([x,y])
+#                   q_tmp += "G0 X" + str(-x/3) + " Y" + str(-y/3) + "\n"
+                elif (x==(height//intr)*intr or y==(width//intr)*intr):
+                    list_total[line].append([x,y])
+#                   q_tmp += "G1 X" + str(-x/3) + " Y" + str(-y/3) + "\n"   
+            elif (gimg[x-intr][y-intr]<=color and x>0 and y>0):
+                list_total[line].append([x,y])
+#               q_tmp += "G1 X" + str(-(x-intr)/3) + " Y" + str(-(y-intr)/3) + "\n"
+            y+=intr
+            x+=intr
+        if (line%2!=0):
+            list_total[line].reverse()
+        line+=1
+    
+    for y in range(0,(width//intr)*intr,intr):
+        list_total.append([])
+        x=0
+        while (x>=0 and y<width and x<height and y>=0):
+            if (gimg[x][y]<=color):
+                if (gimg[x-intr][y-intr]>color or x==0 or y==0):
+                    list_total[line].append([x,y])
+#                                        q_tmp += "G0 X" + str(-x/3) + " Y" + str(-y/3) + "\n"
+                elif (x==(height//intr)*intr or y==(width//intr)*intr):
+                    list_total[line].append([x,y])
+#                                        q_tmp += "G1 X" + str(-x/3) + " Y" + str(-y/3) + "\n"
+            elif (gimg[x-intr][y-intr]<=color and x>0 and y>0):
+                list_total[line].append([x,y])
+#                                q_tmp += "G1 X" + str(-(x-intr)/3) + " Y" + str(-(y-intr)/3) + "\n"
+            x+=intr
+            y+=intr
+        if (line%2!=0):
+            list_total[line].reverse()
+        line+=1
+    return list_total,line
+    
 def GetLevel(level):
-    if level == 1 :
+    if level == 1 : 
         return 223
     elif level == 2 :
         return 191
@@ -187,62 +203,84 @@ def Gcode_Creater(print_id):
 
     pbar = ProgressBar(widgets=[Percentage(), Bar()], maxval=100).start()
     g = cv2.imread('./static/upload_pic/'+print_id +'.jpg',cv2.IMREAD_GRAYSCALE)
-    gimg = cv2.flip(g,0)	
-    height, width = gimg.shape
-    
-    gimg_tmp=0
-    w_tmp=0
-    for x in range(0,height,1):
-        for y in range(0,width,1):
-            if (gimg[x][y]<=223):
-                gimg_tmp += gimg[x][y]
-            else:
-                w_tmp+=1
-    gimg_av=gimg_tmp//((height*width)-w_tmp)
+    pic = cv2.flip(g,0)	
+    height, width = pic.shape
 
-    # parent_conn, child_conn = Pipe()
+    ret,thresh1 = cv2.threshold(pic,223,255,cv2.THRESH_BINARY_INV)
+    ret,thresh2 = cv2.threshold(pic,159,255,cv2.THRESH_BINARY_INV)
+    ret,thresh3 = cv2.threshold(pic,95,255,cv2.THRESH_BINARY_INV)
+    
+    image,contours1,hierarchy1=cv2.findContours(thresh1,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE,offset=(1,-1))
+    image,contours2,hierarchy2=cv2.findContours(thresh2,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE,offset=(1,-1))
+    image,contours3,hierarchy3=cv2.findContours(thresh3,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE,offset=(1,-1))
+    
+    # outline pipe()
     q0x,q0 = Pipe()
     q1x,q1 = Pipe()
     q2x,q2 = Pipe()
+    # color level pipe()
     q3x,q3 = Pipe()
+    q4x,q4 = Pipe()
+    q5x,q5 = Pipe()
     
-    if gimg_av >130  :
-        color_index=[1,3,5]
-    else :
-        color_index=[3,5,6]
+    color_tmp=0
+    white_tmp=0
+    #count pixel color
+    for x in range(0,height,1):
+        for y in range(0,width,1):
+            if (pic[x][y]<=223):
+                color_tmp += pic[x][y]
+            else:
+                white_tmp+=1
+    #count pixel average
+    color_av = color_tmp//((height*width)-white_tmp)
+    #decide color level
+    if color_av >= 100:
+        color_level = [1,3,5]
+    else:
+        color_level = [3,5,6]
 
-    p0 = Process(target=direction0,args=(q0,gimg,color_index[0],intr0,zoom,z_level_down,z_level_up,speed,))
-    p1 = Process(target=direction1,args=(q1,gimg,color_index[1],intr0,zoom,z_level_down,z_level_up,speed,))
-    p2 = Process(target=direction0,args=(q2,gimg,color_index[2],intr1,zoom,z_level_down,z_level_up,speed,))
-#    p3 = Process(target=direction1,args=(q3,gimg,5,intr1,zoom,z_level_down,z_level_up,speed,))
+    p0 = Process(target=diroutline,args=(q0,contours1,zoom,z_level_down,z_level_up,speed,))
+    p1 = Process(target=dirlevel,args=(q1,contours2,zoom,z_level_down,z_level_up,speed,))
+    p2 = Process(target=dirlevel,args=(q2,contours3,zoom,z_level_down,z_level_up,speed,))
 
-    init_r = dirINIT(height,width,zoom,z_level_down,z_level_up,speed,)
+    list_p3 = direction0(pic,color_level[0],intr0,)
+    list_p4 = direction1(pic,color_level[1],intr0,)
+    list_p5 = direction2(pic,color_level[2],intr0,)
+
+    p3 = Process(target=dirGCODE,args=(q3,list_p3[0],list_p3[1],zoom,z_level_down,z_level_up,speed,))
+    p4 = Process(target=dirGCODE,args=(q4,list_p4[0],list_p4[1],zoom,z_level_down,z_level_up,speed,))
+    p5 = Process(target=dirGCODE,args=(q5,list_p5[0],list_p5[1],zoom,z_level_down,z_level_up,speed,))
+
+
     p0.start()
     p1.start()
     p2.start()
-#    p3.start()
-
-    pbar += 10
+    p3.start()
+    p4.start()
+    p5.start()
 
     q0_r = q0x.recv()
     q1_r = q1x.recv()
     q2_r = q2x.recv()
-#    q3_r = q3x.recv()
+    q3_r = q3x.recv()
+    q4_r = q4x.recv()
+    q5_r = q5x.recv()
 
     p0.join()
     p1.join()
     p2.join()
-#    p3.join()
+    print("Outline-code done...")
+    p3.join()
+    p4.join()
+    p5.join()
+    print("Color level done...")
 
     f = open('./static/gcodes/'+str(print_id) + '.nc','w')
-    f.write(init_r)
     f.write(q0_r)
     f.write(q1_r)
     f.write(q2_r)
-#    f.write(q3_r)
-    f.write("G0 Z0\rG0 X0 Y0\r")
+    f.write(q3_r)
+    f.write(q4_r)
+    f.write(q5_r)
     f.close()
-
-    pbar += 90
-    time.sleep(0.5)
-    pbar.finish()
