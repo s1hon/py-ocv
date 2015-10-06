@@ -17,7 +17,7 @@ def diroutline(q,contours,zoom,z_level_down,z_level_up,speed):
 	x=list_area.index(max(list_area))
 	for y in range(0,len(contours[x])):
 		if y==0:
-			q_tmp += "G0 F" + speed + " X"+ str(-contours[x][y][0][1]/zoom) + " Y" + str(-contours[x][y][0][0]/zoom) + "\n"
+			q_tmp += "G1 F" + speed + " X"+ str(-contours[x][y][0][1]/zoom) + " Y" + str(-contours[x][y][0][0]/zoom) + "\n"
 			q_tmp += "G0 Z" + z_level_down + "\n"
 		elif y==len(contours[x])-1:
 			q_tmp += "G1 F" + speed + " X"+ str(-contours[x][y][0][1]/zoom) + " Y" + str(-contours[x][y][0][0]/zoom) + "\n"
@@ -48,7 +48,7 @@ def dirlevel(q,contours,zoom,z_level_down,z_level_up,speed):
 #	for x in range(0,len(contours)):
         	for y in range(0,len(contours[x])):
                 	if y==0:
-                        	q_tmp += "G0 F" + speed + " X"+ str(-contours[x][y][0][1]/zoom) + " Y" + str(-contours[x][y][0][0]/zoom) + "\n"
+                        	q_tmp += "G1 F" + speed + " X"+ str(-contours[x][y][0][1]/zoom) + " Y" + str(-contours[x][y][0][0]/zoom) + "\n"
 	                        q_tmp += "G0 Z" + z_level_down  + "\n"
         	        elif y==len(contours[x])-1:
                 	        q_tmp += "G1 F" + speed + " X"+ str(-contours[x][y][0][1]/zoom) + " Y" + str(-contours[x][y][0][0]/zoom) + "\n"
@@ -69,7 +69,7 @@ def dirGCODE(q,list_total,line,zoom,z_level_down,z_level_up,speed):
 #               print len(list_total[line_x])
                         for line_y in range (0, len(list_total[line_x])):
                                 if (line_y%2==0):
-                                        q_tmp += "G0 F" + speed + " X" + str(-list_total[line_x][line_y][0]/zoom) + " Y" + str(-list_total[line_x][line_y][1]/zoom) + "\n"
+                                        q_tmp += "G1 F" + speed + " X" + str(-list_total[line_x][line_y][0]/zoom) + " Y" + str(-list_total[line_x][line_y][1]/zoom) + "\n"
                                         q_tmp += "G0 Z"+ z_level_down + "\n"
                                 else:
                                         q_tmp += "G1 F" + speed + " X" + str(-list_total[line_x][line_y][0]/zoom) + " Y" + str(-list_total[line_x][line_y][1]/zoom) + "\n"
@@ -278,12 +278,12 @@ if __name__ == '__main__':
 	filename='outline'
 	file_id = str(filename) + '.nc'
 	f = open(file_id,'w')
-#	f.write(q0_r)
-#	f.write(q1_r)
+	f.write(q0_r)
+	f.write(q1_r)
 	f.write(q2_r)
-#	f.write(q3_r)
-#	f.write(q4_r)
-#	f.write(q5_r)
+	f.write(q3_r)
+	f.write(q4_r)
+	f.write(q5_r)
 	f.close()
 
 #cv2.imshow('pic-gray',pic)
