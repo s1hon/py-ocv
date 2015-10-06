@@ -279,11 +279,11 @@ if __name__ == '__main__':
 	file_id = str(filename) + '.nc'
 	f = open(file_id,'w')
 	f.write(q0_r)
-	f.write(q1_r)
-	f.write(q2_r)
+#	f.write(q1_r)
+#	f.write(q2_r)
 	f.write(q3_r)
-	f.write(q4_r)
-	f.write(q5_r)
+#	f.write(q4_r)
+#	f.write(q5_r)
 	f.close()
 
 #cv2.imshow('pic-gray',pic)
